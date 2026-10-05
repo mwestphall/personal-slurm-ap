@@ -1,8 +1,8 @@
 # Personal HTCondor Cluster on CHTC Open OnDemand
 
 This repository contains instructions for launching a single-user HTCondor cluster on CHTC's [Open OnDemand instance](https://ondemand.chtc.wisc.edu/):
-- Creating an HTCondor Submit Node (Access Point) for managing your HTCondor jobs via a long-lived Slurm job.
-- Creating Execution Points (EPs) for running your HTCondor jobs, also via Slurm jobs.
+- Creating an HTCondor Submit Node (Access Point) for managing your HTCondor jobs.
+- Creating Execution Points (EPs) for running your HTCondor jobs.
 - Submitting HTCondor jobs using Open OnDemand's interactive web terminal.
 
 # Log into CHTC's Open OnDemand
@@ -15,17 +15,7 @@ If you are an existing CHTC user and are unable to access Open OnDemand, contact
 
 # Schedule an Access Point on your Slurm Cluster
 
-Your Personal AP manages the state of your HTCondor job queue.
-
-The **Personal HTCondor AP** interactive app launches a Slurm job that:
-
-1. Downloads (if needed) the HTCondor binaries.
-
-1. Configures HTCondor to run as an Access Point in single-user mode under your Unix account.
-
-1. Creates configuration that points HTCondor command line tools at your running AP.
-
-To launch an instance of the Personal HTCondor AP interactive app:
+Your Personal AP manages your HTCondor job queue. To launch an instance of the **Personal HTCondor AP** interactive app:
 
 1. Navigate to the "Interactive Apps" section of the Open OnDemand dashboard.
 
@@ -44,15 +34,8 @@ To launch an instance of the Personal HTCondor AP interactive app:
 
 # Schedule an Execution Point on your Slurm Cluster
 
-Additional resources are required to to run jobs placed into your AP's queue. 
-An Execution Point (EP) runs multiple HTCondor jobs within the lifecycle 
-of a single Slurm job.
-
-## Schedule an Execution Point
-
-The **Personal HTCondor EP** interactive app launches a Slurm script that auto-configures an EP to run the jobs scheduled in your AP.
-
-To launch an instance of the Personal HTCondor EP app:
+An Execution Point (EP) runs the HTCondor jobs in your AP's job queue. You will need to run at least one EP
+alongside your Personal AP. To launch an instance of the **Personal HTCondor EP** app:
 
 1. Navigate to the "Interactive Apps" section of the Open OnDemand dashboard.
 
@@ -63,14 +46,14 @@ To launch an instance of the Personal HTCondor EP app:
 
 1. "Launch" the app.
 
-1. Watch the status of your AP interactive app. Wait for the EP app to reach the "Running" state, and for the AP app to detect the running EP. 
+1. Watch the status of your EP and AP interactive apps. Wait for the EP app to reach the "Running" state, and for the AP app to detect the running EP. 
 
    ![AP Status with EP](/docs/ap-status-with-ep.png)
 
 # Submit your first HTCondor Job to your AP
 
-Your Access Point (AP) configured in the previous section manages your HTCondor job queue, while the
-Execution Point (EP) runs any submitted workloads.
+Your AP and EP interactive apps comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
+will run on your EP. 
 
 Place a "Hello World" HTCondor job into your AP's job queue.
 
@@ -82,7 +65,8 @@ Place a "Hello World" HTCondor job into your AP's job queue.
 
 1. Set up your HTCondor environment
 
-    Source the following file in your home directory:
+    Source the following file in your home directory. This file configures the HTCondor command line tools on the
+    Spark login node to run against your Personal AP:
 
     ```
     $ . ~/.cache/current-ap/condor.sh
@@ -160,6 +144,6 @@ instance of the app is completed or cancelled before scheduling a new instance.
 
 ## Add Execution Points
 
-To run larger workloads on your HTCondor cluster, you can schedule additional EPs onto your Slurm workers by re-running the **Personal HTCondor EP** interactive app.
+To run larger workloads on your HTCondor cluster, you can schedule additional EPs by re-running the **Personal HTCondor EP** interactive app.
 
-Each instance of the EP app will provide additional compute capacity to your cluster.
+Each simultaneous instance of the EP app will provide additional compute capacity to your cluster.
