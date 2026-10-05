@@ -153,6 +153,10 @@ re-run the Personal AP interactive app, ensuring that the "Resume AP" checkbox i
 
 To launch a fresh AP, discarding your previous instance, re-run the app with the "Resume AP" checkbox unchecked.
 
+![Reuse AP](/docs/reuse-ap.png)
+
+**Note:** For best results, avoid scheduling multiple simultaneous instances of the Personal AP interactive app. Ensure that your previous
+instance of the app is completed or cancelled before scheduling a new instance.
 
 ## Add Execution Points
 
