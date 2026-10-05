@@ -1,3 +1,16 @@
+<%
+  # Only one AP can listen on port 9618 per node, and the firewall rules out
+  # other ports, so keep this AP off any node already running a personal AP
+  # (from any user). See notes.md's "Port Collisions".
+  ap_job_names = %w[sys/dashboard/sys/personal_ap sys/dashboard/dev/personal_ap]
+  busy_nodes = begin
+    out = IO.popen(["squeue", "-h", "-t", "R,CF", "-n", ap_job_names.join(","), "-o", "%N"],
+                   err: File::NULL, &:read)
+    out.split("\n").map(&:strip).reject(&:empty?).uniq.join(",")
+  rescue StandardError
+    ""
+  end
+%>
 ---
 batch_connect:
   template: basic
@@ -11,3 +24,7 @@ script:
     - "<%= memory %>G"
     - "-t"
     - "<%= time_limit %>"
+<% unless busy_nodes.empty? %>
+    - "--exclude"
+    - "<%= busy_nodes %>"
+<% end %>

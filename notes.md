@@ -34,6 +34,16 @@ explicitly:
 * `ANNEX_TOKEN_DOMAIN`: EP subject domain checked in the start expressions of annex jobs.
 * `SCHEDD_NAME`: Name of the AP's schedd. Used by annex EPs to locate the schedd for direct connect.
 
+## Port Collisions
+
+Only one AP can listen on port 9618 per node, and the firewall rules out other ports, so two APs (from any user) landing
+on the same node collide. The OOD app avoids this when the job is submitted: `submit.yml.erb` (rendered on the web node)
+runs `squeue` for running personal AP jobs, matched by their job name, and passes their nodes to `sbatch --exclude`.
+
+* This only narrows the odds: two APs submitted at nearly the same time can still be scheduled onto the same node.
+* If the web node can't run `squeue`, or can't see other users' jobs, nothing is excluded.
+* If every node in the partition is running an AP, the new job stays pending until one frees up.
+
 ## Force IDToken Auth
 
 Annex jobs' start expression require that an EP have an `AuthenticatedIdentity` matching `<submitter>@<annex token domain>`.
