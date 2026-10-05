@@ -9,7 +9,9 @@ This repository contains instructions for launching a single-user HTCondor clust
 
 CHTC's Open OnDemand instance can be accessed at [ondemand.chtc.wisc.edu](https://ondemand.chtc.wisc.edu/). Log in using your UW NetID and Password.
 
-If you are unable to access the cluster, [apply for access](https://chtc.wisc.edu/uw-research-computing/form.html) via the CHTC user app.
+If you are new to CHTC and need help setting up an account, [apply for access](https://chtc.wisc.edu/uw-research-computing/form.html) via the CHTC user app.
+
+If you are an existing CHTC user and are unable to access Open OnDemand, contact the CHTC [facilitation team](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) for help.
 
 # Schedule an Access Point on your Slurm Cluster
 
