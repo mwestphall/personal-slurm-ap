@@ -1,0 +1,9 @@
+
+# Copies generated from ood/personal_ap/template/ by ./install.sh
+/ap/11-ap-annex.conf
+/ap/install.sh
+/ap/start.sh
+/ep/annex-ep.sub
+/ep/update-annex-collector.sh
+/ood/personal_ep/template/annex-ep.sub
+/ood/personal_ep/template/update-annex-collector.sh

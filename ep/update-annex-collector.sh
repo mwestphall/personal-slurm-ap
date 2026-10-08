@@ -1,1 +1,0 @@
-../ood/personal_ep/template/update-annex-collector.sh

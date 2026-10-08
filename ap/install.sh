@@ -1,1 +1,0 @@
-../ood/personal_ap/template/install.sh
