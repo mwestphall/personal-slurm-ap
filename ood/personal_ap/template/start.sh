@@ -70,6 +70,11 @@ AP_FULL_HOSTNAME="$(condor_config_val FULL_HOSTNAME)"
 echo "==> Pinning hostname to $AP_FULL_HOSTNAME via NETWORK_HOSTNAME"
 echo "NETWORK_HOSTNAME = $AP_FULL_HOSTNAME" > "$CONDOR_DIR/local/config.d/13-ap-hostname.conf"
 
+# Marker telling a multi-node launcher (see script.sh.erb) that the annex
+# tarball is complete; cleared here so a resumed AP doesn't leave a stale one.
+ANNEX_READY="$CONDOR_DIR/annex-ready"
+rm -f "$ANNEX_READY"
+
 echo "==> Starting HTCondor AP"
 "$CONDOR_DIR/sbin/condor_master" -f &
 MASTER_PID=$!
@@ -143,7 +148,9 @@ prepare_annex() {
     echo "==> Annex tarball at $ANNEX_TARBALL"
 }
 
-if ! prepare_annex; then
+if prepare_annex; then
+    touch "$ANNEX_READY"
+else
     echo "WARNING: could not prepare annex '$ANNEX_NAME'; the AP is still running"
 fi
 

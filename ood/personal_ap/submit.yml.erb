@@ -18,6 +18,8 @@ script:
   native:
     - "-p"
     - "<%= slurm_partition %>"
+    - "-N"
+    - "<%= num_nodes %>"
     - "-c"
     - "<%= cpus %>"
     - "--mem"

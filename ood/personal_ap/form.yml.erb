@@ -6,6 +6,7 @@
 cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
 form:
   - slurm_partition
+  - num_nodes
   - cpus
   - memory
   - time_limit
@@ -20,14 +21,23 @@ attributes:
     label: "Slurm partition"
     value: "shared"
     required: true
-  cpus:
+  num_nodes:
     widget: number_field
-    label: "CPUs"
+    label: "Number of nodes"
     value: 1
     min: 1
+    help: >-
+      The first node runs the AP; each additional node runs an EP that attaches to it. Leave
+      at 1 to run the AP alone and launch EPs separately.
+  cpus:
+    widget: number_field
+    label: "CPUs per node"
+    value: 1
+    min: 1
+    help: "Applies to every node, including EP nodes, so raise it when requesting more than one node."
   memory:
     widget: number_field
-    label: "Memory (GB)"
+    label: "Memory per node (GB)"
     value: 2
     min: 1
   time_limit:
@@ -51,6 +61,7 @@ attributes:
     label: "Base install directory"
     value: ""
     help: >-
-      Where to install a fresh AP (HTCondor is downloaded automatically), on storage shared
-      with the login node. Defaults to /scratch/$USER if left blank. Not used when resuming an
-      existing AP.
+      Where to install a fresh AP (HTCondor is downloaded automatically), and where any EPs
+      launched with the AP (see "Number of nodes") create their working directories, on storage
+      shared with the login node. Defaults to /scratch/$USER if left blank. Not used for the AP when
+      resuming an existing AP.
