@@ -69,7 +69,7 @@ Place a "Hello World" HTCondor job into your AP's job queue.
     Spark login node to run against your Personal AP:
 
     ```
-    $ . ~/.cache/current-ap/condor.sh
+    . ~/.cache/current-ap/condor.sh
     ```
 
     You may also add the above line to your `~/.bashrc` to perform this configuration on every login.
@@ -80,7 +80,7 @@ Place a "Hello World" HTCondor job into your AP's job queue.
     executable bash script (`hello.sh`):
     
     ```
-    $ cat << EOF >> hello.sub
+    cat << EOF >> hello.sub
     executable              = hello.sh
     
     log                     = hello.log
@@ -98,32 +98,32 @@ Place a "Hello World" HTCondor job into your AP's job queue.
     
     EOF
     
-    $ cat << EOF >> hello.sh
+    cat << EOF >> hello.sh
     #!/bin/bash
     echo "Hello, World!"
     echo "I am running on \$(hostname)"
     sleep 30
     EOF
     
-    $ chmod +x hello.sh
+    chmod +x hello.sh
     ```
 
 1. Submit your HTCondor Job to your AP
 
     ```
-    $ condor_submit hello.sub
+    condor_submit hello.sub
     ```
 
 1. Confirm that your Job Runs on the EP
 
     ```
-    $ condor_watch_q
+    condor_watch_q
     ```
 
 1. Check the output of your job after it finishes
 
     ```
-    $ cat hello.out
+    cat hello.out
     Hello, World!
     I am running on hpc-worker123
     ```
