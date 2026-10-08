@@ -124,6 +124,11 @@ Place a "Hello World" HTCondor job into your AP's job queue.
 
     ```
     cat hello.out
+    ```
+
+1. If the job ran successfully, expect output similar to:
+
+    ```
     Hello, World!
     I am running on hpc-worker123
     ```
