@@ -54,9 +54,15 @@ launch_eps() {
     # annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR, and
     # reads EP_ID so each node gets its own working dir and daemon names.
     export SLURM_SUBMIT_DIR="$AP_DIR"
-    srun --label --nodes=$((NUM_NODES - 1)) --ntasks=$((NUM_NODES - 1)) --ntasks-per-node=1 \
+    # OOD submits with a restricted environment that srun steps inherit, leaving
+    # the step without PATH ("execve(): bash: No such file or directory"), so
+    # pass this script's environment through and give srun bash's absolute path.
+    # --cpus-per-task is explicit because srun doesn't reliably inherit it from
+    # the job ("More processors requested than permitted" otherwise).
+    srun --label --export=ALL --nodes=$((NUM_NODES - 1)) --ntasks=$((NUM_NODES - 1)) --ntasks-per-node=1 \
+        --cpus-per-task="${SLURM_CPUS_PER_TASK:-1}" \
         --nodelist="$ep_nodes" \
-        bash -c 'EP_ID="${SLURM_JOB_ID}-${SLURM_NODEID}" exec bash "$0/annex-ep.sub" "$1"' \
+        "$(command -v bash)" -c 'EP_ID="${SLURM_JOB_ID}-${SLURM_NODEID}" exec bash "$0/annex-ep.sub" "$1"' \
         "$AP_DIR" "$BASE_DIR"
 }
 
