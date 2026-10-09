@@ -1,12 +1,16 @@
-executable              = hello.sh
+# Executable file to run in this HTCondor job
+executable              = hello.sh 
 
-log                     = hello.log
-output                  = hello.out
-error                   = hello.err
+# Output files for this HTCondor job
+log                     = hello.log # Log of HTCondor scheduling events for this job
+output                  = hello.out # Stdout of this job's executable
+error                   = hello.err # Stderr of this job's executable
 
-should_transfer_files   = Yes
+# Instruct HTCondor to transfer the executable and other input files to worker nodes
+should_transfer_files   = Yes 
 when_to_transfer_output = ON_EXIT
 
+# Resource requests for the job. The job will only run on worker nodes with sufficient resources.
 request_cpus            = 1
 request_memory          = 512M
 request_disk            = 1G
