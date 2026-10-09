@@ -31,42 +31,18 @@ fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
 
-# Write the README's "Hello World" job into ~/personal-htcondor/sample-submit.
-# Never fatal: a failure here only logs a warning.
+# Copy the sample job (template/sample-job) into ~/personal-htcondor/sample-submit,
+# leaving any files the user already has there alone. Never fatal: a failure
+# here only logs a warning.
 create_sample_submit() {
-    local dir="$HOME/personal-htcondor/sample-submit"
+    local dir="$HOME/personal-htcondor/sample-submit" file
     mkdir -p "$dir" || return 1
 
-    if [ ! -e "$dir/hello.sub" ]; then
-        cat > "$dir/hello.sub" <<'EOF'
-executable              = hello.sh
+    for file in "$AP_DIR"/sample-job/*; do
+        [ -e "$dir/$(basename "$file")" ] || cp -p "$file" "$dir/" || return 1
+    done
 
-log                     = hello.log
-output                  = hello.out
-error                   = hello.err
-
-should_transfer_files   = Yes
-when_to_transfer_output = ON_EXIT
-
-request_cpus            = 1
-request_memory          = 512M
-request_disk            = 1G
-
-queue
-EOF
-    fi
-
-    if [ ! -e "$dir/hello.sh" ]; then
-        cat > "$dir/hello.sh" <<'EOF'
-#!/bin/bash
-echo "Hello, World!"
-echo "I am running on $(hostname)"
-sleep 30
-EOF
-        chmod +x "$dir/hello.sh" || return 1
-    fi
-
-    echo "==> Sample submit file at $dir/hello.sub"
+    echo "==> Sample job copied to $dir (see README.md there)"
 }
 
 if [ "<%= context.create_sample %>" = "1" ]; then

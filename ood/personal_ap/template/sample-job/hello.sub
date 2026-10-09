@@ -1,0 +1,14 @@
+executable              = hello.sh
+
+log                     = hello.log
+output                  = hello.out
+error                   = hello.err
+
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+
+request_cpus            = 1
+request_memory          = 512M
+request_disk            = 1G
+
+queue

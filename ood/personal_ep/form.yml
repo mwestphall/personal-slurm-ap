@@ -20,7 +20,7 @@ attributes:
     value: 1
     min: 1
     help: >-
-      Each EP runs on its own node and attaches to the AP, so the job requests this many nodes.
+      EPs provide additional compute capacity to your HTCondor cluster. 
   cpus:
     widget: number_field
     label: "CPUs per node"
@@ -41,6 +41,5 @@ attributes:
     label: "Base install directory"
     value: ""
     help: >-
-      Directory to create this EP's working directory in, on storage shared with the AP's
-      node. The EP attaches to the AP at ~/personal-htcondor/current-ap. Defaults to /scratch/$USER if
-      left blank.
+      Working directory for your HTCondor cluster. Defaults to /scratch/$USER.
+      Must be on shared storage, accessible from both the login node and all worker nodes.
