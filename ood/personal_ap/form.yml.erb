@@ -23,18 +23,17 @@ attributes:
     required: true
   num_eps:
     widget: number_field
-    label: "Number of EPs"
+    label: "Number of Execution Points"
     value: 1
     min: 1
     help: >-
-      Each EP runs on its own node and attaches to the AP, which runs on an additional
-      node, so the job requests this many nodes plus one.
+      Each EP runs on its own node and attaches to the AP. This interactive app
+      requires a minimum of two nodes: One AP and one EP.
   cpus:
     widget: number_field
     label: "CPUs per node"
     value: 1
     min: 1
-    help: "Applies to every node, including the AP's and each EP's."
   memory:
     widget: number_field
     label: "Memory per node (GB)"
@@ -48,20 +47,18 @@ attributes:
 <% if existing_ap %>
   reuse_ap:
     widget: check_box
-    label: "Reuse existing AP"
+    label: "Recover Job Queue"
     value: "1"
     checked_value: "1"
     unchecked_value: "0"
     help: >-
-      Resume the AP at ~/.cache/current-ap. Uncheck to install a fresh AP instead, which
-      replaces it.
+      Recover the job queue from your previous personal HTCondor cluster. If unchecked,
+      a new, empty job queue will be created.
 <% end %>
   base_dir:
     widget: text_field
     label: "Base install directory"
     value: ""
     help: >-
-      Where to install a fresh AP (HTCondor is downloaded automatically), and where any EPs
-      launched with the AP (see "Number of nodes") create their working directories, on storage
-      shared with the login node. Defaults to /scratch/$USER if left blank. Not used for the AP when
-      resuming an existing AP.
+      Location on your cluster's shared filesystem to install HTCondor software.
+      Must be accessible from both the login node and all worker nodes.

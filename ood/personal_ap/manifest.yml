@@ -1,11 +1,12 @@
 ---
-name: Personal HTCondor AP
+name: Personal HTCondor Cluster
 category: Interactive Apps
 subcategory: Servers
 role: batch_connect
 description: |
-  Launch a personal HTCondor Access Point (AP) as a Slurm job. The AP holds your HTCondor job queue;
-  you will need to launch a **Personal HTCondor EP** alongside this AP to run your queued jobs, or set **Number of nodes** above 1 to launch EPs on the
-  additional nodes of this same job.
+  Launch a personal HTCondor Cluster as a multi-node Slurm job. A cluster consists of two daemons:
+    
+  - One Access Point, which manages your HTCondor job queue
+  - One or more Execution Points, which run your HTCondor jobs 
 
-  **Note** For best results, only run a single instance of the AP app at a time.
+  **Note** For best results, do not run multiple simultaneous personal HTCondor Clusters.
