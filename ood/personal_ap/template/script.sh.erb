@@ -31,10 +31,11 @@ fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
 
-# Multi-node jobs: this node (the first allocated) runs the AP; every other
-# node runs an EP. Wait for the AP to finish building the annex tarball, then
-# start one EP per remaining node as job steps (Slurm cleans them up with the job).
-NUM_NODES="<%= context.respond_to?(:num_nodes) ? context.num_nodes.to_i : 1 %>"
+# This node (the first allocated) runs the AP; every other node runs an EP
+# (the job has num_eps + 1 nodes). Wait for the AP to finish building the annex
+# tarball, then start one EP per remaining node as job steps (Slurm cleans them
+# up with the job).
+NUM_EPS="<%= context.num_eps.to_i %>"
 
 launch_eps() {
     local ready="$CONDOR_DIR/annex-ready" waited=0
@@ -59,16 +60,14 @@ launch_eps() {
     # pass this script's environment through and give srun bash's absolute path.
     # --cpus-per-task is explicit because srun doesn't reliably inherit it from
     # the job ("More processors requested than permitted" otherwise).
-    srun --label --export=ALL --nodes=$((NUM_NODES - 1)) --ntasks=$((NUM_NODES - 1)) --ntasks-per-node=1 \
+    srun --label --export=ALL --nodes=$NUM_EPS --ntasks=$NUM_EPS --ntasks-per-node=1 \
         --cpus-per-task="${SLURM_CPUS_PER_TASK:-1}" \
         --nodelist="$ep_nodes" \
         "$(command -v bash)" -c 'EP_ID="${SLURM_JOB_ID}-${SLURM_NODEID}" exec bash "$0/annex-ep.sub" "$1"' \
         "$AP_DIR" "$BASE_DIR"
 }
 
-if [ "$NUM_NODES" -gt 1 ]; then
-    launch_eps &
-fi
+launch_eps &
 
 # Periodically write the file that view.html.erb reads, into the AP's shared
 # dir. Runs in the background alongside the AP, and is cleaned up with the job.

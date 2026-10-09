@@ -6,7 +6,7 @@
 cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
 form:
   - slurm_partition
-  - num_nodes
+  - num_eps
   - cpus
   - memory
   - time_limit
@@ -21,20 +21,20 @@ attributes:
     label: "Slurm partition"
     value: "shared"
     required: true
-  num_nodes:
+  num_eps:
     widget: number_field
-    label: "Number of nodes"
+    label: "Number of EPs"
     value: 1
     min: 1
     help: >-
-      The first node runs the AP; each additional node runs an EP that attaches to it. Leave
-      at 1 to run the AP alone and launch EPs separately.
+      Each EP runs on its own node and attaches to the AP, which runs on an additional
+      node, so the job requests this many nodes plus one.
   cpus:
     widget: number_field
     label: "CPUs per node"
     value: 1
     min: 1
-    help: "Applies to every node, including EP nodes, so raise it when requesting more than one node."
+    help: "Applies to every node, including the AP's and each EP's."
   memory:
     widget: number_field
     label: "Memory per node (GB)"

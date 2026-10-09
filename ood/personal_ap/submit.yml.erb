@@ -19,7 +19,7 @@ script:
     - "-p"
     - "<%= slurm_partition %>"
     - "-N"
-    - "<%= num_nodes %>"
+    - "<%= num_eps.to_i + 1 %>"
     - "-c"
     - "<%= cpus %>"
     - "--mem"
