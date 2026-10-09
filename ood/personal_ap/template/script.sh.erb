@@ -12,7 +12,7 @@ AP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 BASE_DIR="<%= context.base_dir %>"
 BASE_DIR="${BASE_DIR:-/scratch/$USER}" # only used for a fresh install
-CURRENT_AP="$HOME/.cache/current-ap"
+CURRENT_AP="$HOME/personal-htcondor/current-ap"
 
 # reuse_ap is only on the form (checked by default) when there is an existing AP.
 REUSE_AP="<%= context.respond_to?(:reuse_ap) ? context.reuse_ap : "0" %>"
@@ -30,6 +30,48 @@ else
 fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
+
+# Write the README's "Hello World" job into ~/personal-htcondor/sample-submit.
+# Never fatal: a failure here only logs a warning.
+create_sample_submit() {
+    local dir="$HOME/personal-htcondor/sample-submit"
+    mkdir -p "$dir" || return 1
+
+    if [ ! -e "$dir/hello.sub" ]; then
+        cat > "$dir/hello.sub" <<'EOF'
+executable              = hello.sh
+
+log                     = hello.log
+output                  = hello.out
+error                   = hello.err
+
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+
+request_cpus            = 1
+request_memory          = 512M
+request_disk            = 1G
+
+queue
+EOF
+    fi
+
+    if [ ! -e "$dir/hello.sh" ]; then
+        cat > "$dir/hello.sh" <<'EOF'
+#!/bin/bash
+echo "Hello, World!"
+echo "I am running on $(hostname)"
+sleep 30
+EOF
+        chmod +x "$dir/hello.sh" || return 1
+    fi
+
+    echo "==> Sample submit file at $dir/hello.sub"
+}
+
+if [ "<%= context.create_sample %>" = "1" ]; then
+    create_sample_submit || echo "WARNING: could not create the sample submit file; continuing" >&2
+fi
 
 # This node (the first allocated) runs the AP; every other node runs an EP
 # (the job has num_eps + 1 nodes). Wait for the AP to finish building the annex

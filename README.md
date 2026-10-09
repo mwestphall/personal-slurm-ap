@@ -69,12 +69,16 @@ Place a "Hello World" HTCondor job into your AP's job queue.
     Spark login node to run against your Personal AP:
 
     ```
-    . ~/.cache/current-ap/condor.sh
+    . ~/personal-htcondor/current-ap/condor.sh
     ```
 
     You may also add the above line to your `~/.bashrc` to perform this configuration on every login.
 
 1. Create a "Hello World" Job
+
+    If you left **Create Sample Submit File** checked when launching your AP, this job already exists in
+    `~/personal-htcondor/sample-submit`; run `cd ~/personal-htcondor/sample-submit` and skip to the next step.
+    Otherwise, create it yourself:
 
     Create a "Hello World" job on your login node, consisting of a Submit File (`hello.sub`) and an
     executable bash script (`hello.sh`):

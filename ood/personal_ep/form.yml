@@ -42,5 +42,5 @@ attributes:
     value: ""
     help: >-
       Directory to create this EP's working directory in, on storage shared with the AP's
-      node. The EP attaches to the AP at ~/.cache/current-ap. Defaults to /scratch/$USER if
+      node. The EP attaches to the AP at ~/personal-htcondor/current-ap. Defaults to /scratch/$USER if
       left blank.

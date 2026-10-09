@@ -1,6 +1,6 @@
 <%
   info = begin
-    JSON.parse(File.read(File.join(Dir.home, ".cache", "current-ap", "ood-view.json")))
+    JSON.parse(File.read(File.join(Dir.home, "personal-htcondor", "current-ap", "ood-view.json")))
   rescue StandardError
     nil
   end
@@ -25,7 +25,7 @@
 </p>
 <% else %>
 <p>To interact with this cluster, open a shell on the login node and run:</p>
-<pre>. ~/.cache/current-ap/condor.sh</pre>
+<pre>. ~/personal-htcondor/current-ap/condor.sh</pre>
 <p>
   New to HTCondor? See the
   <a href="https://htcondor.readthedocs.io/en/latest/users-manual/quick-start-guide.html" target="_blank">quick start guide</a>.

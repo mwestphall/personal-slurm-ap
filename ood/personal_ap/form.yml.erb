@@ -1,6 +1,6 @@
 <%
   # Offer to reuse the existing AP only if there is one to reuse.
-  existing_ap = File.symlink?(File.join(Dir.home, ".cache", "current-ap"))
+  existing_ap = File.symlink?(File.join(Dir.home, "personal-htcondor", "current-ap"))
 %>
 ---
 cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
@@ -13,6 +13,7 @@ form:
 <% if existing_ap %>
   - reuse_ap
 <% end %>
+  - create_sample
   - base_dir
 
 attributes:
@@ -55,6 +56,15 @@ attributes:
       Recover the job queue from your previous personal HTCondor cluster. If unchecked,
       a new, empty job queue will be created.
 <% end %>
+  create_sample:
+    widget: check_box
+    label: "Create Sample Submit File"
+    value: "1"
+    checked_value: "1"
+    unchecked_value: "0"
+    help: >-
+      Create an example HTCondor submit file (hello.sub) and its executable (hello.sh) in
+      ~/personal-htcondor/sample-submit, for trying out your cluster. Existing files are not overwritten.
   base_dir:
     widget: text_field
     label: "Base install directory"
