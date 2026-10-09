@@ -33,6 +33,8 @@ fi
 # job its own working directory.
 # EP_ID defaults to the Slurm job ID; a multi-node job launching several EPs
 # (see ood/personal_ap) sets it per node so they don't share a directory or names.
+# A preset EP_ID means we were launched as an srun step of a multi-node job.
+IN_STEP="${EP_ID:+1}"
 EP_ID="${EP_ID:-${SLURM_JOB_ID:?SLURM_JOB_ID is not set; run this script via sbatch}}"
 EP_DIR="$BASE_DIR/ep-${EP_ID}"
 echo "Creating EP working directory $EP_DIR"
@@ -96,6 +98,12 @@ EOF
 
 echo ""
 echo "Executing HTC annex slurm script"
+# annex-setup.sh wraps its node script in `srun` whenever SLURM_JOBID is set,
+# which fails when nested inside our own srun step (CPU binding outside of the
+# step's allocation). Unset it (SLURM_JOB_ID stays set) so it runs directly.
+if [ -n "$IN_STEP" ]; then
+  unset SLURM_JOBID
+fi
 export SLURM_EXPORT_ENV=ALL
 bash hpc.slurm > annex-job.out 2> annex-job.err
 status=$?
