@@ -28,8 +28,8 @@ attributes:
     value: 1
     min: 1
     help: >-
-      Each EP runs on its own node and attaches to the AP. This interactive app
-      requires a minimum of two nodes: One AP and one EP.
+      EPs provide compute capacity to your HTCondor cluster. You can add additional EPs later with
+      the "Extend Personal HTCondor" app.
   cpus:
     widget: number_field
     label: "CPUs per node"
@@ -63,8 +63,8 @@ attributes:
     checked_value: "1"
     unchecked_value: "0"
     help: >-
-      Create an example HTCondor submit file (hello.sub) and its executable (hello.sh) in
-      ~/personal-htcondor/sample-submit, for trying out your cluster. Existing files are not overwritten.
+      Create an example HTCondor submit file and its executable in
+      `~/personal-htcondor/sample-submit/`
   base_dir:
     widget: text_field
     label: "Base install directory"
