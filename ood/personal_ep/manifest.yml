@@ -1,11 +1,10 @@
 ---
-name: Personal HTCondor EP
+name: Extend Personal HTCondor
 category: Interactive Apps
 subcategory: Servers
 role: batch_connect
 description: |
-  Launch one or more personal HTCondor Execution Points (EPs), one per node, as a Slurm job attached to the
-  AP launched by the Personal HTCondor AP app.
+  Allocate additional Execution Points to a running Personal HTCondor Cluster.
 
-  **Note**: Ensure that you have an active **Personal HTCondor AP** interactive app session running prior
-  to launching an EP job.
+  **Note**: Ensure that you have an active **Personal HTCondor Cluster** interactive app session running prior
+  to allocating additional EPs.
