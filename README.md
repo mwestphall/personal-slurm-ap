@@ -1,9 +1,9 @@
 # Personal HTCondor Cluster on CHTC Open OnDemand
 
 This repository contains instructions for launching a single-user HTCondor cluster on CHTC's [Open OnDemand instance](https://ondemand.chtc.wisc.edu/):
-- Creating an HTCondor Submit Node (Access Point) for managing your HTCondor jobs.
-- Creating Execution Points (EPs) for running your HTCondor jobs.
-- Submitting HTCondor jobs using Open OnDemand's interactive web terminal.
+
+- Creating an HTCondor cluster consisting of a Submit Node (Acess Point) and Worker Nodes (Execution Points), as a multi-node Slurm Job.
+- Submitting HTCondor jobs to your cluster using Open OnDemand's interactive web terminal.
 
 # Log into CHTC's Open OnDemand
 
@@ -13,18 +13,25 @@ If you are new to CHTC and need help setting up an account, [apply for access](h
 
 If you are an existing CHTC user and are unable to access Open OnDemand, contact the CHTC [facilitation team](https://chtc.cs.wisc.edu/uw-research-computing/get-help.html) for help.
 
-# Schedule an Access Point on your Slurm Cluster
+# Schedule an HTCondor Cluster on your Slurm Cluster
 
-Your Personal AP manages your HTCondor job queue. To launch an instance of the **Personal HTCondor AP** interactive app:
+Your Personal HTCondor cluster runs as a multi-node Slurm job. One node in this job runs an Access Point,
+which manages your HTCondor job queue. The remaining nodes run Execution Points, which run your HTCondor jobs.
+
+To launch an instance of the **Create Personal HTCondor** interactive app:
 
 1. Navigate to the "Interactive Apps" section of the Open OnDemand dashboard.
 
    ![Interactive App Dropdown](/docs/interactive-apps.png)
 
-1. Select "Personal HTCondor AP".
+1. Select "Create Personal HTCondor".
 
-1. In the app's submission form, select a slurm partition and resource requests for your AP.
+1. In the app's submission form, select a slurm partition, resource requests, and EP count for your AP.
     - All fields may be left as the default.
+
+1. Check the "Create Sample Submit File" checkbox. This creates a sample executable file, 
+   and a submit description file for running this executable as an HTCondor job, in
+   `~/personal-htcondor/sample-submit`.
 
 1. "Launch" the app.
 
@@ -32,25 +39,7 @@ Your Personal AP manages your HTCondor job queue. To launch an instance of the *
 
    ![AP Status](/docs/ap-status.png)
 
-# Schedule an Execution Point on your Slurm Cluster
-
-An Execution Point (EP) runs the HTCondor jobs in your AP's job queue. You will need to run at least one EP
-alongside your Personal AP. To launch an instance of the **Personal HTCondor EP** app:
-
-1. Navigate to the "Interactive Apps" section of the Open OnDemand dashboard.
-
-1. Select "Personal HTCondor EP".
-
-1. In the app's submission form, select a slurm partition and resource requests for your EP.
-    - All fields may be left as the default.
-
-1. "Launch" the app.
-
-1. Watch the status of your EP and AP interactive apps. Wait for the EP app to reach the "Running" state, and for the AP app to detect the running EP. 
-
-   ![AP Status with EP](/docs/ap-status-with-ep.png)
-
-# Submit your first HTCondor Job to your AP
+# Submit your first HTCondor Job
 
 Your AP and EP interactive apps comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
 will run on your EP. 
@@ -74,42 +63,10 @@ Place a "Hello World" HTCondor job into your AP's job queue.
 
     You may also add the above line to your `~/.bashrc` to perform this configuration on every login.
 
-1. Create a "Hello World" Job
+1. Change to your Sample Job's directory
 
-    If you left **Create Sample Submit File** checked when launching your AP, this job already exists in
-    `~/personal-htcondor/sample-submit`; run `cd ~/personal-htcondor/sample-submit` and skip to the next step.
-    Otherwise, create it yourself:
-
-    Create a "Hello World" job on your login node, consisting of a Submit File (`hello.sub`) and an
-    executable bash script (`hello.sh`):
-    
     ```
-    cat << EOF >> hello.sub
-    executable              = hello.sh
-    
-    log                     = hello.log
-    output                  = hello.out
-    error                   = hello.err
-    
-    should_transfer_files   = Yes
-    when_to_transfer_output = ON_EXIT
-    
-    request_cpus            = 1
-    request_memory          = 512M
-    request_disk            = 1G
-    
-    queue
-    
-    EOF
-    
-    cat << EOF >> hello.sh
-    #!/bin/bash
-    echo "Hello, World!"
-    echo "I am running on \$(hostname)"
-    sleep 30
-    EOF
-    
-    chmod +x hello.sh
+    cd ~/personal-htcondor/sample-submit
     ```
 
 1. Submit your HTCondor Job to your AP

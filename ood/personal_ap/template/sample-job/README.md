@@ -34,5 +34,10 @@ personal HTCondor cluster. To run it:
     I am running on hpc-worker123
     ```
 
-If the job stays idle, make sure you have launched at least one EP (see the **Personal HTCondor EP**
-app). `hello.log` and `hello.err` have more detail.
+If the job stays idle, make sure that your cluster's AP and EPs are successfully communicating:
+
+```
+condor_status
+```
+
+`hello.log` and `hello.err` may have more detail.
