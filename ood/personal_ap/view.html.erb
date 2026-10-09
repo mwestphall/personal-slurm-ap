@@ -11,7 +11,7 @@
 <p><small>Last updated: <%= info["updated"] %></small></p>
 <p>Connected EPs: <strong><%= info["num_eps"] %></strong></p>
 <p>
-  Jobs in this AP:
+  Jobs in AP:
   <strong><%= info["running"] %></strong> running,
   <strong><%= info["held"] %></strong> held,
   <strong><%= info["idle"] %></strong> idle,
@@ -20,12 +20,11 @@
 
 <% if info["num_eps"].to_i.zero? %>
 <p>
-  No EPs are connected to this AP yet, so no jobs can run. Launch an EP job to provide
-  compute capacity: start <strong>Personal HTCondor EP</strong> from the Interactive Apps
-  menu.
+  No EPs are connected to this AP yet, so no jobs can run. If this problem persists,
+  contact an administrator.
 </p>
 <% else %>
-<p>To interact with this AP, open a shell on the login node and run:</p>
+<p>To interact with this cluster, open a shell on the login node and run:</p>
 <pre>. ~/.cache/current-ap/condor.sh</pre>
 <p>
   New to HTCondor? See the
