@@ -6,5 +6,5 @@ role: batch_connect
 description: |
   Allocate additional Execution Points to a running Personal HTCondor Cluster.
 
-  **Note**: Ensure that you have an active **Personal HTCondor Cluster** interactive app session running prior
+  **Note**: Ensure that you have an active **Create Personal HTCondor** app running prior
   to allocating additional EPs.

@@ -1,12 +1,10 @@
 ---
-name: Personal HTCondor Cluster
+name: Create Personal HTCondor
 category: Interactive Apps
 subcategory: Servers
 role: batch_connect
 description: |
-  Launch a personal HTCondor Cluster as a multi-node Slurm job. A cluster consists of two daemons:
-    
-  - One Access Point, which manages your HTCondor job queue
-  - One or more Execution Points, which run your HTCondor jobs 
+  Launch a personal HTCondor Cluster as a multi-node Slurm job. A cluster consists of one
+  Access Point (Submit Node) and multiple Execution Points (Worker Nodes).
 
   **Note** For best results, do not run multiple simultaneous personal HTCondor Clusters.
