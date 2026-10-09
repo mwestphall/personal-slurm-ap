@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Rendered by Open OnDemand from ood/personal_ep/template/script.sh.erb. Thin
-# wrapper around annex-ep.sub, copied alongside this script into
+# wrapper around annex-ep.sub, which it runs once per allocated node, copied alongside this script into
 # ood/personal_ep/template/ (and staged alongside it at job runtime) so this
 # app is self-contained.
 
@@ -12,7 +12,15 @@ EP_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="<%= context.base_dir %>"
 BASE_DIR="${BASE_DIR:-/scratch/$USER}" # where this EP's working dir goes
 
-# annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR.
+NUM_EPS="<%= context.num_eps.to_i %>"
+
+# annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR, and
+# reads EP_ID so each node gets its own working dir and daemon names.
 export SLURM_SUBMIT_DIR="$EP_SCRIPT_DIR"
 
-exec bash "$EP_SCRIPT_DIR/annex-ep.sub" "$BASE_DIR"
+# One EP per node, as job steps (Slurm cleans them up with the job). The step
+# flags mirror ood/personal_ap/template/script.sh.erb; see the comments there.
+exec srun --label --export=ALL --nodes="$NUM_EPS" --ntasks="$NUM_EPS" --ntasks-per-node=1 \
+    --cpus-per-task="${SLURM_CPUS_PER_TASK:-1}" \
+    "$(command -v bash)" -c 'EP_ID="${SLURM_JOB_ID}-${SLURM_NODEID}" exec bash "$0/annex-ep.sub" "$1"' \
+    "$EP_SCRIPT_DIR" "$BASE_DIR"

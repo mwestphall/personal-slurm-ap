@@ -5,6 +5,8 @@ script:
   native:
     - "-p"
     - "<%= slurm_partition %>"
+    - "-N"
+    - "<%= num_eps %>"
     - "-c"
     - "<%= cpus %>"
     - "--mem"
