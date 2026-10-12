@@ -41,8 +41,8 @@ To launch an instance of the **Create Personal HTCondor** interactive app:
 
 # Submit your first HTCondor Job
 
-Your AP and EP interactive apps comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
-will run on your EP. 
+The AP node and EP nodes in your interactive app comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
+will run on your EPs. 
 
 Place a "Hello World" HTCondor job into your AP's job queue.
 
@@ -96,20 +96,20 @@ Place a "Hello World" HTCondor job into your AP's job queue.
 
 # Additional Utilities
 
-## Resume an Access Point
+## Recover your Job Queue
 
-The AP configured by the **Personal HTCondor AP** app will exit after 4 hours by default. To resume your AP after it exits,
-re-run the Personal AP interactive app, ensuring that the "Resume AP" checkbox is checked.
+The cluster configured by the **Create Personal HTCondor** app will exit after 4 hours by default. To resume any idle jobs from your cluster
+after it exits, re-run the interactive app, ensuring that the "Recover Job Queue" checkbox is checked.
 
-To launch a fresh AP, discarding your previous instance, re-run the app with the "Resume AP" checkbox unchecked.
+To launch a fresh cluster, discarding your previous instance, re-run the app with the "Recover Job Queue" checkbox unchecked.
 
 ![Reuse AP](/docs/reuse-ap.png)
 
-**Note:** For best results, avoid scheduling multiple simultaneous instances of the Personal AP interactive app. Ensure that your previous
+**Note:** For best results, avoid scheduling multiple simultaneous instances of the Personal HTCondor interactive app. Ensure that your previous
 instance of the app is completed or cancelled before scheduling a new instance.
 
 ## Add Execution Points
 
-To run larger workloads on your HTCondor cluster, you can schedule additional EPs by re-running the **Personal HTCondor EP** interactive app.
+To run larger workloads on your HTCondor cluster, you can schedule additional EPs by running the **Extend Personal HTCondor** interactive app.
 
-Each simultaneous instance of the EP app will provide additional compute capacity to your cluster.
+Each simultaneous instance of the Extend Personal HTCondor app will provide additional compute capacity to your cluster.
