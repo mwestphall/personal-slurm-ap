@@ -14,8 +14,8 @@ SRC="$REPO_DIR/ood/personal_ap/template"
 # <destination dir relative to the repo>: <files copied from $SRC>
 declare -A COPIES=(
     [ap]="11-ap-annex.conf install.sh start.sh"
-    [ep]="annex-ep.sub update-annex-collector.sh"
-    [ood/personal_ep/template]="annex-ep.sub update-annex-collector.sh"
+    [ep]="annex-ep.sub annex-ep-init.sh update-annex-collector.sh"
+    [ood/personal_ep/template]="annex-ep.sub annex-ep-init.sh update-annex-collector.sh"
 )
 
 for dest in "${!COPIES[@]}"; do

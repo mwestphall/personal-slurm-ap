@@ -33,8 +33,6 @@ fi
 # job its own working directory.
 # EP_ID defaults to the Slurm job ID; a multi-node job launching several EPs
 # (see ood/personal_ap) sets it per node so they don't share a directory or names.
-# A preset EP_ID means we were launched as an srun step of a multi-node job.
-IN_STEP="${EP_ID:+1}"
 EP_ID="${EP_ID:-${SLURM_JOB_ID:?SLURM_JOB_ID is not set; run this script via sbatch}}"
 EP_DIR="$BASE_DIR/ep-${EP_ID}"
 echo "Creating EP working directory $EP_DIR"
@@ -43,16 +41,8 @@ mkdir -p "$EP_DIR" && cd "$EP_DIR" || {
   exit 1
 }
 
-echo "Unpacking $SOURCE"
-tar -xvf "$SOURCE" --strip-components=1
-
-echo ""
-echo "Displaying working directory"
-ls -alh
-
-echo ""
-echo "Executing annex setup script"
-bash annex-setup.sh
+# Kept outside EP_DIR: the tarball unpacked there contains its own annex.token.
+TOKEN_FILE="$EP_DIR.token"
 
 echo ""
 echo "Minting a properly-scoped annex token from the AP's signing key"
@@ -76,46 +66,28 @@ fi
     IDENTITY="$(whoami)@$TOKEN_DOMAIN"
     condor_token_create -key AP -identity "$IDENTITY" \
         -authz READ -authz WRITE -authz ADVERTISE_STARTD -authz ADVERTISE_MASTER -authz DAEMON
-) > annex.token
+) > "$TOKEN_FILE"
 
-if [ ! -s annex.token ]; then
+if [ ! -s "$TOKEN_FILE" ]; then
   echo "ERROR: Failed to mint a properly-scoped annex token"
   exit 1
 fi
 
 echo ""
-echo "Configuring dynamic collector and schedd-name lookup"
-# AP_SCHEDD_ADDRESS_FILE just passes this path to the cron job below; see
-# notes.md's "AP Address Polling" and update-annex-collector.sh.
-cat >> 20-annex-pilot-instance <<EOF
-
-AP_SCHEDD_ADDRESS_FILE = ${AP_DIR}/local/spool/.schedd_address
-
-# Make this EP's names unique by appending its EP ID, so EPs sharing a
-# worker node don't collide in the AP's collector. UID_DOMAIN and the default
-# daemon names otherwise derive from the node's FULL_HOSTNAME alone.
-UID_DOMAIN = \$(FULL_HOSTNAME)-${EP_ID}
-STARTD_NAME = \$(FULL_HOSTNAME)-${EP_ID}
-MASTER_NAME = \$(FULL_HOSTNAME)-${EP_ID}
-
-STARTD_CRON_JOBLIST = \$(STARTD_CRON_JOBLIST) UPDATE_ANNEX_COLLECTOR
-STARTD_CRON_UPDATE_ANNEX_COLLECTOR_EXECUTABLE = ${SCRIPT_DIR}/update-annex-collector.sh
-STARTD_CRON_UPDATE_ANNEX_COLLECTOR_ARGS = \$(AP_SCHEDD_ADDRESS_FILE)
-STARTD_CRON_UPDATE_ANNEX_COLLECTOR_MODE = Periodic
-STARTD_CRON_UPDATE_ANNEX_COLLECTOR_PERIOD = 60
-STARTD_CRON_LOG_NON_ZERO_EXIT = True
-EOF
-
-echo ""
-echo "Executing HTC annex slurm script"
-# annex-setup.sh wraps its node script in `srun` whenever SLURM_JOBID is set,
-# which fails when nested inside our own srun step (CPU binding outside of the
-# step's allocation). Unset it (SLURM_JOB_ID stays set) so it runs directly.
-if [ -n "$IN_STEP" ]; then
-  unset SLURM_JOBID
-fi
-export SLURM_EXPORT_ENV=ALL
-bash hpc.slurm > annex-job.out 2> annex-job.err
+echo "Starting annex EP inside Apptainer"
+# Everything past token minting runs in the container; see annex-ep-init.sh.
+# Inputs are mounted read-only under /annex-in and the EP working dir at /ep.
+# The container has no access to update-annex-collector.sh's shared-FS
+# locations, so that cron job is expected to fail for now.
+apptainer exec \
+  --bind "$SOURCE:/annex-in/annex.tar:ro" \
+  --bind "$TOKEN_FILE:/annex-in/annex.token:ro" \
+  --bind "$SCRIPT_DIR/update-annex-collector.sh:/annex-in/update-annex-collector.sh:ro" \
+  --bind "$SCRIPT_DIR/annex-ep-init.sh:/annex-in/annex-ep-init.sh:ro" \
+  --bind "$EP_DIR:/ep" \
+  --env "AP_DIR=$AP_DIR" \
+  --env "EP_ID=$EP_ID" \
+  docker://almalinux:9 bash /annex-in/annex-ep-init.sh
 status=$?
-echo "hpc.slurm exited with status ${status}"
+echo "annex EP container exited with status ${status}"
 exit "${status}"
