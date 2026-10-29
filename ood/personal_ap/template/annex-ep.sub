@@ -63,7 +63,7 @@ apptainer exec \
   --bind "$SCRIPT_DIR/update-annex-collector.sh:/annex-in/update-annex-collector.sh:ro" \
   --bind "$SCRIPT_DIR/annex-ep-init.sh:/annex-in/annex-ep-init.sh:ro" \
   --bind "$LOG_DIR:/ep-logs" \
-  --device /dev/fuse \
+  --bind /dev/fuse \
   --env "AP_DIR=$AP_DIR" \
   --env "EP_ID=$EP_ID" \
   docker://almalinux:9 bash /annex-in/annex-ep-init.sh
