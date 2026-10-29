@@ -35,11 +35,11 @@ EP_ID="${EP_ID:-${SLURM_JOB_ID:?SLURM_JOB_ID is not set; run this script via sba
 # Condor's and hpc.slurm's logs go in a per-EP dir in the job's working dir, so
 # they're visible outside the container. The EP itself is unpacked and run
 # inside the container.
-LOG_DIR="$PWD/ep-${EP_ID}"
+LOG_DIR="$PWD/ep-${EP_ID}/logs"
 echo "Creating EP log directory $LOG_DIR"
 # Likewise for the EP's execute dir, so job sandboxes get the job's real
 # working-dir disk rather than the container's /tmp.
-EXECUTE_DIR="$PWD/ep-${EP_ID}-execute"
+EXECUTE_DIR="$PWD/ep-${EP_ID}/execute"
 echo "Creating EP execute directory $EXECUTE_DIR"
 mkdir -p "$LOG_DIR" "$EXECUTE_DIR" || {
   echo "ERROR: Failed to create $LOG_DIR or $EXECUTE_DIR"
