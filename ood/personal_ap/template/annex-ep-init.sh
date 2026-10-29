@@ -1,12 +1,16 @@
 #!/bin/bash
 # Runs inside the annex-ep.sub Apptainer container. Inputs are bind-mounted
-# read-only under /annex-in; the EP working dir is bind-mounted at /ep.
+# read-only under /annex-in, and a host-visible log dir at /ep-logs. The EP is
+# unpacked and run in a per-EP dir under the node's /tmp (shared with the host,
+# so it has real disk space, unlike the container's own filesystem).
 # Expects AP_DIR and EP_ID in the environment.
 
-cd /ep || {
-  echo "ERROR: /ep is not mounted"
+EP_DIR="/tmp/ep-${EP_ID}"
+mkdir -p "$EP_DIR" && cd "$EP_DIR" || {
+  echo "ERROR: Failed to create or enter $EP_DIR"
   exit 1
 }
+trap 'cd /; rm -rf "$EP_DIR"' EXIT
 
 echo "Unpacking /annex-in/annex.tar"
 tar -xvf /annex-in/annex.tar --strip-components=1
@@ -29,6 +33,9 @@ echo "Configuring dynamic collector and schedd-name lookup"
 # AP_SCHEDD_ADDRESS_FILE just passes this path to the cron job below; see
 # notes.md's "AP Address Polling" and update-annex-collector.sh.
 cat >> 20-annex-pilot-instance <<EOT
+
+# Send condor's logs to the bind-mounted, host-visible log dir.
+LOG = /ep-logs
 
 AP_SCHEDD_ADDRESS_FILE = ${AP_DIR}/local/spool/.schedd_address
 
@@ -54,7 +61,7 @@ echo "Executing HTC annex slurm script"
 # so it runs directly.
 unset SLURM_JOBID
 export SLURM_EXPORT_ENV=ALL
-bash hpc.slurm > annex-job.out 2> annex-job.err
+bash hpc.slurm > /ep-logs/annex-job.out 2> /ep-logs/annex-job.err
 status=$?
 echo "hpc.slurm exited with status ${status}"
 exit "${status}"
