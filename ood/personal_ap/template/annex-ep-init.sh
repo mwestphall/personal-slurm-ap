@@ -1,8 +1,9 @@
 #!/bin/bash
 # Runs inside the annex-ep.sub Apptainer container. Inputs are bind-mounted
-# read-only under /annex-in, and a host-visible log dir at /ep-logs. The EP is
-# unpacked and run in a per-EP dir under the node's /tmp (shared with the host,
-# so it has real disk space, unlike the container's own filesystem).
+# read-only under /annex-in, with host-visible log and execute dirs at
+# /ep-logs and /ep-execute. The EP is unpacked and run in a per-EP dir under
+# the node's /tmp (shared with the host, so it has real disk space, unlike the
+# container's own filesystem).
 # Expects AP_DIR and EP_ID in the environment.
 
 EP_DIR="/tmp/ep-${EP_ID}"
@@ -36,6 +37,9 @@ cat >> 20-annex-pilot-instance <<EOT
 
 # Send condor's logs to the bind-mounted, host-visible log dir.
 LOG = /ep-logs
+
+# Run job sandboxes in the bind-mounted execute dir.
+EXECUTE = /ep-execute
 
 AP_SCHEDD_ADDRESS_FILE = ${AP_DIR}/local/spool/.schedd_address
 

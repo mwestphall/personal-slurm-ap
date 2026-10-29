@@ -37,8 +37,12 @@ EP_ID="${EP_ID:-${SLURM_JOB_ID:?SLURM_JOB_ID is not set; run this script via sba
 # inside the container.
 LOG_DIR="$PWD/ep-${EP_ID}"
 echo "Creating EP log directory $LOG_DIR"
-mkdir -p "$LOG_DIR" || {
-  echo "ERROR: Failed to create $LOG_DIR"
+# Likewise for the EP's execute dir, so job sandboxes get the job's real
+# working-dir disk rather than the container's /tmp.
+EXECUTE_DIR="$PWD/ep-${EP_ID}-execute"
+echo "Creating EP execute directory $EXECUTE_DIR"
+mkdir -p "$LOG_DIR" "$EXECUTE_DIR" || {
+  echo "ERROR: Failed to create $LOG_DIR or $EXECUTE_DIR"
   exit 1
 }
 
@@ -53,8 +57,8 @@ fi
 echo ""
 echo "Starting annex EP inside Apptainer"
 # Everything past token minting runs in the container; see annex-ep-init.sh.
-# Inputs are mounted read-only under /annex-in, and the log dir at /ep-logs
-# (condor's LOG, plus annex-job.out/err).
+# Inputs are mounted read-only under /annex-in, the log dir at /ep-logs
+# (condor's LOG, plus annex-job.out/err), and the execute dir at /ep-execute.
 # The container has no access to update-annex-collector.sh's shared-FS
 # locations, so that cron job is expected to fail for now.
 apptainer exec \
@@ -63,7 +67,7 @@ apptainer exec \
   --bind "$SCRIPT_DIR/update-annex-collector.sh:/annex-in/update-annex-collector.sh:ro" \
   --bind "$SCRIPT_DIR/annex-ep-init.sh:/annex-in/annex-ep-init.sh:ro" \
   --bind "$LOG_DIR:/ep-logs" \
-  --bind /dev/fuse \
+  --bind "$EXECUTE_DIR:/ep-execute" \
   --env "AP_DIR=$AP_DIR" \
   --env "EP_ID=$EP_ID" \
   docker://almalinux:9 bash /annex-in/annex-ep-init.sh
