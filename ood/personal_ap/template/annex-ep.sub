@@ -42,36 +42,11 @@ mkdir -p "$LOG_DIR" || {
   exit 1
 }
 
-# Named by EP ID so tokens minted for multiple EPs don't collide.
-TOKEN_FILE="$PWD/ep-${EP_ID}.token"
-
-echo ""
-echo "Minting a properly-scoped annex token from the AP's signing key"
-# The bundled annex.token is scope-clipped to READ/WRITE; mint a
-# replacement offline against the AP's own signing key, using the pinned
-# ANNEX_TOKEN_DOMAIN so it stays valid across AP resumes. See notes.md's
-# "Explicit IDToken Creation".
-# The domain is read straight from the AP's pinned config file (written by
-# install.sh) rather than via condor_config_val
-TOKEN_DOMAIN="$(sed -n 's/^ANNEX_TOKEN_DOMAIN[[:space:]]*=[[:space:]]*//p' \
-    "$AP_DIR/local/config.d/12-ap-trust-domain.conf" | tail -n 1 | tr -d '[:space:]')"
-if [ -z "$TOKEN_DOMAIN" ]; then
-  # An empty domain would mint a token whose subject is "<user>@", which the
-  # AP's annex jobs won't match.
-  echo "ERROR: ANNEX_TOKEN_DOMAIN not found in $AP_DIR/local/config.d/12-ap-trust-domain.conf"
-  exit 1
-fi
-(
-    # shellcheck disable=SC1091
-    . "$AP_DIR/condor.sh"
-    IDENTITY="$(whoami)@$TOKEN_DOMAIN"
-    condor_token_create -key AP -identity "$IDENTITY" \
-        -authz READ -authz WRITE -authz ADVERTISE_STARTD -authz ADVERTISE_MASTER -authz DAEMON
-) > "$TOKEN_FILE"
-
-chmod 600 "$TOKEN_FILE"
+# The annex token is minted once by the AP's start.sh, since it doesn't depend
+# on the EP; see start.sh.
+TOKEN_FILE="$AP_DIR/annex-ep.token"
 if [ ! -s "$TOKEN_FILE" ]; then
-  echo "ERROR: Failed to mint a properly-scoped annex token"
+  echo "ERROR: Annex token $TOKEN_FILE does not exist; check the AP's log for token minting errors"
   exit 1
 fi
 

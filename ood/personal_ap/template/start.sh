@@ -96,6 +96,30 @@ IDENTITY="$(whoami)@$(condor_config_val UID_DOMAIN)"
 condor_token_create -identity "$IDENTITY" -authz READ -authz WRITE -token "$TOKEN_NAME"
 echo "    Generated sample IDToken for $IDENTITY at $CONDOR_DIR/local/tokens.d/$TOKEN_NAME"
 
+# Mint the annex EPs' token here, where condor's binaries are known to be
+# loadable, so the EP nodes never have to run them off the shared FS. The
+# bundled annex.token in the tarball is scope-clipped to READ/WRITE; this
+# replacement is minted offline against the AP's own signing key, using the
+# pinned ANNEX_TOKEN_DOMAIN so it stays valid across AP resumes. See notes.md's
+# "Explicit IDToken Creation". Its identity doesn't depend on the EP, so all
+# EPs share it. Failures are logged but non-fatal, like annex preparation.
+ANNEX_EP_TOKEN="$CONDOR_DIR/annex-ep.token"
+rm -f "$ANNEX_EP_TOKEN"
+echo "==> Minting the annex EP token"
+ANNEX_TOKEN_DOMAIN="$(condor_config_val ANNEX_TOKEN_DOMAIN || true)"
+if [ -z "$ANNEX_TOKEN_DOMAIN" ]; then
+    # An empty domain would mint a token whose subject is "<user>@", which the
+    # AP's annex jobs won't match.
+    echo "WARNING: ANNEX_TOKEN_DOMAIN is not set; not minting the annex EP token"
+elif (umask 077 && condor_token_create -key AP -identity "$(whoami)@$ANNEX_TOKEN_DOMAIN" \
+        -authz READ -authz WRITE -authz ADVERTISE_STARTD -authz ADVERTISE_MASTER -authz DAEMON \
+        > "$ANNEX_EP_TOKEN") && [ -s "$ANNEX_EP_TOKEN" ]; then
+    echo "    Minted annex EP token at $ANNEX_EP_TOKEN"
+else
+    rm -f "$ANNEX_EP_TOKEN"
+    echo "WARNING: could not mint the annex EP token"
+fi
+
 # --- Prepare the default annex ------------------------------------------
 # Build the EP tarball for ep/annex-ep.sub at a well-known path (reachable
 # via ~/personal-htcondor/current-ap), authenticating to the AP with the IDToken above.
