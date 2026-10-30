@@ -10,6 +10,12 @@
   rescue StandardError
     ""
   end
+
+  # The AP needs fewer resources than an EP. With small per-node allocations it
+  # gets its own node; otherwise it shares the first node with an EP. Keep in
+  # sync with template/script.sh.erb.
+  ap_shares_node = cpus.to_i > 2 && memory.to_i > 4
+  num_nodes = ap_shares_node ? num_eps.to_i : num_eps.to_i + 1
 %>
 ---
 batch_connect:
@@ -19,7 +25,7 @@ script:
     - "-p"
     - "<%= slurm_partition %>"
     - "-N"
-    - "<%= num_eps.to_i + 1 %>"
+    - "<%= num_nodes %>"
     - "-c"
     - "<%= cpus %>"
     - "--mem"

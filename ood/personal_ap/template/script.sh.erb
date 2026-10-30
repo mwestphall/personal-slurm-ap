@@ -49,11 +49,14 @@ if [ "<%= context.create_sample %>" = "1" ]; then
     create_sample_submit || echo "WARNING: could not create the sample submit file; continuing" >&2
 fi
 
-# This node (the first allocated) runs the AP; every other node runs an EP
-# (the job has num_eps + 1 nodes). Wait for the AP to finish building the annex
+# This node (the first allocated) runs the AP. With small per-node allocations
+# (<=2 CPUs or <=4GB) every other node runs an EP (the job has num_eps + 1
+# nodes); otherwise the AP shares this node with an EP and the job has num_eps
+# nodes. Keep in sync with submit.yml.erb. Wait for the AP to finish building the annex
 # tarball, then start one EP per remaining node as job steps (Slurm cleans them
 # up with the job).
 NUM_EPS="<%= context.num_eps.to_i %>"
+AP_SHARES_NODE="<%= context.cpus.to_i > 2 && context.memory.to_i > 4 ? 1 : 0 %>"
 
 launch_eps() {
     local ready="$CONDOR_DIR/annex-ready" waited=0
@@ -66,8 +69,9 @@ launch_eps() {
         waited=$((waited + 2))
     done
 
-    local ep_nodes
-    ep_nodes="$(scontrol show hostnames "$SLURM_JOB_NODELIST" | tail -n +2 | paste -sd,)"
+    local ep_nodes first_ep_line=2
+    [ "$AP_SHARES_NODE" = "1" ] && first_ep_line=1
+    ep_nodes="$(scontrol show hostnames "$SLURM_JOB_NODELIST" | tail -n +"$first_ep_line" | paste -sd,)"
     echo "==> Launching EPs on: $ep_nodes"
 
     # annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR, and
