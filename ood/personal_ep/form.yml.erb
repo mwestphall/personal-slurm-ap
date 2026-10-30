@@ -1,0 +1,72 @@
+<%
+  # Partitions that are up and that the user may submit to. sacctmgr lists the
+  # partitions the user's associations are limited to; an association with an
+  # empty partition field is unrestricted. Falls back to a plain text field
+  # (see below) if Slurm can't be queried. Keep in sync with the other form.
+  require "json"
+  partitions = begin
+    up = IO.popen(["sinfo", "-h", "-o", "%R|%a"], err: File::NULL, &:read).split("\n")
+           .map { |l| l.strip.split("|") }.select { |_, state| state == "up" }.map(&:first)
+    assocs = IO.popen(["sacctmgr", "-nP", "show", "assoc", "user=#{ENV['USER'] || Etc.getpwuid.name}", "format=partition"],
+                      err: File::NULL, &:read).split("\n", -1).map(&:strip)[0..-2] || []
+    allowed = assocs.empty? || assocs.include?("") ? up : up & assocs.flat_map { |a| a.split(",") }
+    allowed.uniq.sort
+  rescue StandardError
+    []
+  end
+  default_partition = partitions.include?("shared") ? "shared" : partitions.first
+%>
+---
+cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
+form:
+  - slurm_partition
+  - num_eps
+  - cpus
+  - memory
+  - time_limit
+  - base_dir
+
+attributes:
+<% if partitions.empty? %>
+  slurm_partition:
+    widget: text_field
+    label: "Slurm partition"
+    value: "shared"
+    required: true
+<% else %>
+  slurm_partition:
+    widget: select
+    label: "Slurm partition"
+    value: "<%= default_partition %>"
+    options: <%= partitions.to_json %>
+    required: true
+<% end %>
+  num_eps:
+    widget: number_field
+    label: "Number of EPs"
+    value: 1
+    min: 1
+    help: >-
+      EPs provide additional compute capacity to your HTCondor cluster. 
+  cpus:
+    widget: number_field
+    label: "CPUs per node"
+    value: 2
+    min: 1
+  memory:
+    widget: number_field
+    label: "Memory per node (GB)"
+    value: 4
+    min: 1
+  time_limit:
+    widget: text_field
+    label: "Time limit"
+    value: "4:00:00"
+    help: "Slurm time format, e.g. HH:MM:SS or D-HH:MM:SS. The EP runs only as long as this job does."
+  base_dir:
+    widget: text_field
+    label: "Base install directory"
+    value: ""
+    help: >-
+      Working directory for your HTCondor cluster. Must be on shared storage, 
+      accessible from both the login node and all worker nodes. Defaults to /scratch/$USER.
