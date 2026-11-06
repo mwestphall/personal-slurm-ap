@@ -12,7 +12,7 @@ form:
 <% end %>
   - create_sample
   - submit_sample
-  - submit_files
+  - submit_file
   - exit_after_submit
   - base_dir
 
@@ -56,14 +56,15 @@ attributes:
     help: >-
       Automatically submit the sample job to your queue once the AP is running. This also creates
       the sample submit file, whether or not "Create Sample Submit File" is checked.
-  submit_files:
-    widget: text_area
-    label: "Submit Files"
+  submit_file:
+    widget: path_selector
+    label: "Submit File"
     value: ""
-    rows: 4
+    show_files: true
+    popup_title: "Select a Submit File"
     help: >-
-      Submit files to submit once the AP is running, one path per line (`~` is allowed). Each file is submitted
-      from its own directory; files ending in `.dag` are submitted with `condor_submit_dag`.
+      A submit file to submit once the AP is running (optional). It is submitted from its own directory;
+      files ending in `.dag` are submitted with `condor_submit_dag`.
   exit_after_submit:
     widget: check_box
     label: "Exit After Submitting"
@@ -71,7 +72,7 @@ attributes:
     checked_value: "1"
     unchecked_value: "0"
     help: >-
-      Stop this session as soon as all of the jobs above have been submitted successfully. Your queue is kept, and its
+      Stop this session as soon as the jobs above have been submitted successfully. Your queue is kept, and its
       jobs run the next time you launch a cluster. Has no effect if nothing is selected for submission.
   base_dir:
     widget: text_field

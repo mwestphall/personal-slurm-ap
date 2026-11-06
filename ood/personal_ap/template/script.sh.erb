@@ -17,8 +17,8 @@ LAUNCH_EP="0"
 
 <%
   require "shellwords"
-  # One path per line; expand "~" here since the shell won't after escaping.
-  submit_paths = context.submit_files.to_s.lines.map(&:strip).reject(&:empty?)
+  # The selected submit file, if any; expand "~" here since the shell won't after escaping.
+  submit_paths = [context.submit_file.to_s.strip].reject(&:empty?)
                         .map { |f| f.start_with?("~") ? File.expand_path(f) : f }
 %>
 SUBMIT_FILES=(<%= submit_paths.map { |f| Shellwords.escape(f) }.join(" ") %>)
