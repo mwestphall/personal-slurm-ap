@@ -9,7 +9,6 @@
 <p>Waiting for the AP to report its status&hellip;</p>
 <% else %>
 <p><small>Last updated: <%= info["updated"] %></small></p>
-<p>Connected EPs: <strong><%= info["num_eps"] %></strong></p>
 <p>
   Jobs in AP:
   <strong><%= info["running"] %></strong> running,
@@ -18,14 +17,7 @@
   <strong><%= info["completed"] %></strong> completed
 </p>
 
-<% if info["num_eps"].to_i.zero? %>
-<p>
-  This session has no Execution Points, so jobs you submit will wait in your queue. To run
-  them, cancel this session and launch <strong>Create Personal HTCondor Cluster</strong>, which
-  picks up your queue automatically.
-</p>
-<% end %>
-<p>To interact with this cluster, open a shell on the login node and run:</p>
+<p>To submit jobs to your queue, open a shell on the login node and run:</p>
 <pre>. ~/personal-htcondor/current-ap/condor.sh</pre>
 <p>
   New to HTCondor? See the
