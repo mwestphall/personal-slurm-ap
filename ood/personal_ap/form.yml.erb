@@ -6,7 +6,6 @@
 cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
 form:
   - slurm_partition
-  - num_eps
   - cpus
   - memory
   - time_limit
@@ -22,24 +21,20 @@ attributes:
     label: "Slurm partition"
     value: "shared"
     required: true
-  num_eps:
-    widget: number_field
-    label: "Number of Execution Points"
-    value: 1
-    min: 1
-    help: >-
-      EPs provide compute capacity to your HTCondor cluster. You can add additional EPs later with
-      the "Extend Personal HTCondor" app.
   cpus:
     widget: number_field
-    label: "CPUs per node"
+    label: "CPUs for jobs"
     value: 1
     min: 1
   memory:
     widget: number_field
-    label: "Memory per node (GB)"
+    label: "Memory for jobs (GB)"
     value: 2
     min: 1
+    help: >-
+      Resources for the Execution Point that runs your HTCondor jobs. The cluster runs on a single node;
+      the Access Point's own 1 CPU and 2 GB of memory are added on top of this request.
+      You can add more EPs later with the "Extend Personal HTCondor" app.
   time_limit:
     widget: text_field
     label: "Time limit"

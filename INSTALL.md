@@ -5,7 +5,7 @@ repository on an OOD host. For end-user instructions, see [README.md](README.md)
 
 | App directory        | OOD app name                | Purpose                                                              |
 |----------------------|-----------------------------|----------------------------------------------------------------------|
-| `ood/personal_ap`    | Create Personal HTCondor    | Launches a multi-node Slurm job: one HTCondor AP plus a set of EPs.  |
+| `ood/personal_ap`    | Create Personal HTCondor    | Launches a single-node Slurm job: one HTCondor AP plus one EP.    |
 | `ood/personal_ep`    | Extend Personal HTCondor    | Launches additional EPs, attached to a user's already-running AP.    |
 
 Run all installation steps on the OOD host.
@@ -102,9 +102,9 @@ Then restart the web server if needed and open **</> Develop > My Sandbox Apps (
 
 ## Site Customization
 
-You may update the default resource requests (node count, cpu count, memory, time limit) by editing `form.yml.erb` and `form.yml`
+You may update the default resource requests (cpu count, memory, time limit) by editing `form.yml.erb` and `form.yml`
 in `ood/personal_ap` and `ood/personal_ep`, respectively. The app installs its HTCondor daemons' working directories into your 
-cluster's shared filesystem at `/scratch/$USER` by default. Update `BASE_DIR` in `ood/personal_ap/template/script.sh.erb`
+cluster's shared filesystem at `/scratch/$USER` by default. Update `BASE_DIR` in `ood/personal_ap/template/script.sh`
 to set the default to a different location. Users may also override the default location via the interactive apps' submission form.
 
 ## Verifying the Installation

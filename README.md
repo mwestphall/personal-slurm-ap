@@ -2,7 +2,7 @@
 
 This repository contains instructions for launching a single-user HTCondor cluster on CHTC's [Open OnDemand instance](https://ondemand.chtc.wisc.edu/):
 
-- Creating an HTCondor cluster consisting of a Submit Node (Acess Point) and Worker Nodes (Execution Points), as a multi-node Slurm Job.
+- Creating an HTCondor cluster consisting of a Submit Node (Acess Point) and Worker Nodes (Execution Points), as a single-node Slurm Job.
 - Submitting HTCondor jobs to your cluster using Open OnDemand's interactive web terminal.
 
 # Log into CHTC's Open OnDemand
@@ -15,8 +15,9 @@ If you are an existing CHTC user and are unable to access Open OnDemand, contact
 
 # Schedule an HTCondor Cluster on your Slurm Cluster
 
-Your Personal HTCondor cluster runs as a multi-node Slurm job. One node in this job runs an Access Point,
-which manages your HTCondor job queue. The remaining nodes run Execution Points, which run your HTCondor jobs.
+Your Personal HTCondor cluster runs as a single-node Slurm job. The job runs an Access Point (on 1 CPU and 2 GB of memory
+added to your request), which manages your HTCondor job queue, and an Execution Point on the CPUs and memory you
+requested, which runs your HTCondor jobs.
 
 To launch an instance of the **Create Personal HTCondor** interactive app:
 
@@ -41,7 +42,7 @@ To launch an instance of the **Create Personal HTCondor** interactive app:
 
 # Submit your first HTCondor Job
 
-The AP node and EP nodes in your interactive app comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
+The AP and EP in your interactive app comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
 will run on your EPs. 
 
 Place a "Hello World" HTCondor job into your AP's job queue.
