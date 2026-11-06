@@ -15,10 +15,54 @@ REUSE_AP="<%= context.respond_to?(:reuse_ap) ? context.reuse_ap : "0" %>"
 # AP only: don't launch an EP.
 LAUNCH_EP="0"
 
+<%
+  require "shellwords"
+  # One path per line; expand "~" here since the shell won't after escaping.
+  submit_paths = context.submit_files.to_s.lines.map(&:strip).reject(&:empty?)
+                        .map { |f| f.start_with?("~") ? File.expand_path(f) : f }
+%>
+SUBMIT_FILES=(<%= submit_paths.map { |f| Shellwords.escape(f) }.join(" ") %>)
+EXIT_AFTER_SUBMIT="<%= context.exit_after_submit %>"
+
 # Never fatal: a failure here only logs a warning.
-if [ "<%= context.create_sample %>" = "1" ]; then
+if [ "<%= context.create_sample %>" = "1" ] || [ "<%= context.submit_sample %>" = "1" ]; then
     "$AP_DIR/sample-job.sh" || echo "WARNING: could not create the sample submit file; continuing" >&2
 fi
 
-# shellcheck disable=SC1091
-source "$AP_DIR/entrypoint.sh"
+if [ "<%= context.submit_sample %>" = "1" ]; then
+    SUBMIT_FILES+=("$HOME/personal-htcondor/sample-submit/hello.sub")
+fi
+
+# Run the entrypoint in a subshell (it ends by exec'ing the AP's srun step, so
+# ENTRY_PID is that step) so this script can wait on it and stop it.
+( source "$AP_DIR/entrypoint.sh" ) &
+ENTRY_PID=$!
+# Forward termination (e.g. the job being cancelled) to the AP step.
+trap 'kill -TERM "$ENTRY_PID" 2>/dev/null || true' TERM INT
+
+# Submit the requested jobs once the AP is up, and optionally stop the AP when
+# they all went in (the queue stays on disk). $STOPPED_MARK records that we
+# stopped it ourselves, so that counts as success below.
+STOPPED_MARK="$(mktemp)"
+if [ "${#SUBMIT_FILES[@]}" -gt 0 ]; then
+    (
+        if "$AP_DIR/submit-jobs.sh" --watch-pid "$ENTRY_PID" "${SUBMIT_FILES[@]}" \
+                && [ "$EXIT_AFTER_SUBMIT" = "1" ]; then
+            echo "==> All jobs submitted; stopping the AP"
+            echo stopped > "$STOPPED_MARK"
+            kill -TERM "$ENTRY_PID"
+        fi
+    ) &
+fi
+
+# A trapped signal interrupts the first wait; wait again for the real exit status.
+rc=0
+wait "$ENTRY_PID" || rc=$?
+if kill -0 "$ENTRY_PID" 2>/dev/null; then
+    wait "$ENTRY_PID" || rc=$?
+fi
+if [ -s "$STOPPED_MARK" ]; then
+    rc=0
+fi
+rm -f "$STOPPED_MARK"
+exit "$rc"

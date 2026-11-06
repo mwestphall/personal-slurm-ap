@@ -11,6 +11,9 @@ form:
   - reuse_ap
 <% end %>
   - create_sample
+  - submit_sample
+  - submit_files
+  - exit_after_submit
   - base_dir
 
 attributes:
@@ -44,6 +47,32 @@ attributes:
     help: >-
       Create an example HTCondor submit file and its executable in
       `~/personal-htcondor/sample-submit/`
+  submit_sample:
+    widget: check_box
+    label: "Submit Sample Job"
+    value: "0"
+    checked_value: "1"
+    unchecked_value: "0"
+    help: >-
+      Automatically submit the sample job to your queue once the AP is running. This also creates
+      the sample submit file, whether or not "Create Sample Submit File" is checked.
+  submit_files:
+    widget: text_area
+    label: "Submit Files"
+    value: ""
+    rows: 4
+    help: >-
+      Submit files to submit once the AP is running, one path per line (`~` is allowed). Each file is submitted
+      from its own directory; files ending in `.dag` are submitted with `condor_submit_dag`.
+  exit_after_submit:
+    widget: check_box
+    label: "Exit After Submitting"
+    value: "0"
+    checked_value: "1"
+    unchecked_value: "0"
+    help: >-
+      Stop this session as soon as all of the jobs above have been submitted successfully. Your queue is kept, and its
+      jobs run the next time you launch a cluster. Has no effect if nothing is selected for submission.
   base_dir:
     widget: text_field
     label: "Base install directory"

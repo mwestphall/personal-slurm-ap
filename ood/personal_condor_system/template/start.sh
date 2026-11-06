@@ -78,6 +78,9 @@ rm -f "$ANNEX_READY"
 echo "==> Starting HTCondor AP"
 "$CONDOR_DIR/sbin/condor_master" -f &
 MASTER_PID=$!
+# Forward termination (scancel, or the entrypoint's exit-after-submit) to the
+# master so it shuts down cleanly instead of being orphaned and killed.
+trap 'kill -TERM "$MASTER_PID" 2>/dev/null || true' TERM INT
 
 # --- Enable IDToken Authentication --------------------------------------
 # Wait up to 10 seconds for the AP to provision its pool password.
@@ -181,4 +184,10 @@ fi
 echo "==> To interact with this AP from the login node, source the condor env file at $CONDOR_DIR/condor.sh:"
 echo "    '. $CONDOR_DIR/condor.sh'"
 
-wait "$MASTER_PID"
+# A trapped signal interrupts the first wait; wait again for the real exit status.
+rc=0
+wait "$MASTER_PID" || rc=$?
+if kill -0 "$MASTER_PID" 2>/dev/null; then
+    wait "$MASTER_PID" || rc=$?
+fi
+exit "$rc"
