@@ -6,8 +6,6 @@
 cluster: "*" # Glob: show a dropdown of every cluster configured on this OOD instance.
 form:
   - slurm_partition
-  - cpus
-  - memory
   - time_limit
 <% if existing_ap %>
   - reuse_ap
@@ -21,20 +19,6 @@ attributes:
     label: "Slurm partition"
     value: "shared"
     required: true
-  cpus:
-    widget: number_field
-    label: "CPUs for jobs"
-    value: 1
-    min: 1
-  memory:
-    widget: number_field
-    label: "Memory for jobs (GB)"
-    value: 2
-    min: 1
-    help: >-
-      Resources for the Execution Point that runs your HTCondor jobs. The cluster runs on a single node;
-      the Access Point's own 1 CPU and 2 GB of memory are added on top of this request.
-      You can add more EPs later with the "Extend Personal HTCondor" app.
   time_limit:
     widget: text_field
     label: "Time limit"
@@ -48,8 +32,8 @@ attributes:
     checked_value: "1"
     unchecked_value: "0"
     help: >-
-      Recover the job queue from your previous personal HTCondor cluster. If unchecked,
-      a new, empty job queue will be created.
+      Keep the job queue from your previous personal HTCondor session. Uncheck to discard it and
+      create a new, empty job queue.
 <% end %>
   create_sample:
     widget: check_box

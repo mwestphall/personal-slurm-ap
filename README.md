@@ -19,15 +19,15 @@ Your Personal HTCondor cluster runs as a single-node Slurm job. The job runs an 
 added to your request), which manages your HTCondor job queue, and an Execution Point on the CPUs and memory you
 requested, which runs your HTCondor jobs.
 
-To launch an instance of the **Create Personal HTCondor** interactive app:
+To launch an instance of the **Create Personal HTCondor Cluster** interactive app:
 
 1. Navigate to the "Interactive Apps" section of the Open OnDemand dashboard.
 
    ![Interactive App Dropdown](/docs/interactive-apps.png)
 
-1. Select "Create Personal HTCondor".
+1. Select "Create Personal HTCondor Cluster".
 
-1. In the app's submission form, select a slurm partition, resource requests, and EP count for your AP.
+1. In the app's submission form, select a slurm partition and resource requests for your jobs.
     - All fields may be left as the default.
 
 1. Check the "Create Sample Submit File" checkbox. This creates a sample executable file, 
@@ -97,20 +97,24 @@ Place a "Hello World" HTCondor job into your AP's job queue.
 
 # Additional Utilities
 
-## Recover your Job Queue
+## Queue jobs before launching a cluster
 
-The cluster configured by the **Create Personal HTCondor** app will exit after 4 hours by default. To resume any idle jobs from your cluster
-after it exits, re-run the interactive app, ensuring that the "Recover Job Queue" checkbox is checked.
+Your HTCondor job queue is stored on disk and survives between sessions, so you can prepare jobs ahead of time:
 
-To launch a fresh cluster, discarding your previous instance, re-run the app with the "Recover Job Queue" checkbox unchecked.
+1. Launch the **Create Personal HTCondor Access Point** app. It runs only an AP, with no Execution Points.
+1. Submit your jobs from its login-node shell as usual. They wait in your queue.
+1. Cancel the session, then launch **Create Personal HTCondor Cluster**. It picks up your saved queue automatically, and
+   your jobs run without being resubmitted.
+
+The cluster app always continues the existing job queue, and creates one only if you have never launched an AP before.
+Cluster sessions exit after 4 hours by default; jobs still in your queue are picked up the next time you launch a cluster.
+
+## Start a new job queue
+
+To discard your existing queue and start empty, launch the **Create Personal HTCondor Access Point** app with the
+"Recover Job Queue" checkbox unchecked. This checkbox only appears once you have an existing queue.
 
 ![Reuse AP](/docs/reuse-ap.png)
 
-**Note:** For best results, avoid scheduling multiple simultaneous instances of the Personal HTCondor interactive app. Ensure that your previous
-instance of the app is completed or cancelled before scheduling a new instance.
-
-## Add Execution Points
-
-To run larger workloads on your HTCondor cluster, you can schedule additional EPs by running the **Extend Personal HTCondor** interactive app.
-
-Each simultaneous instance of the Extend Personal HTCondor app will provide additional compute capacity to your cluster.
+**Note:** For best results, avoid scheduling multiple simultaneous instances of the Personal HTCondor interactive apps. Ensure that your previous
+instance is completed or cancelled before launching a new one.

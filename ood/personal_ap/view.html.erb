@@ -20,10 +20,11 @@
 
 <% if info["num_eps"].to_i.zero? %>
 <p>
-  No EPs are connected to this AP yet, so no jobs can run. If this problem persists,
-  contact an administrator.
+  This session has no Execution Points, so jobs you submit will wait in your queue. To run
+  them, cancel this session and launch <strong>Create Personal HTCondor Cluster</strong>, which
+  picks up your queue automatically.
 </p>
-<% else %>
+<% end %>
 <p>To interact with this cluster, open a shell on the login node and run:</p>
 <pre>. ~/personal-htcondor/current-ap/condor.sh</pre>
 <p>
@@ -33,5 +34,4 @@
 <a class="btn btn-primary" href="/pun/sys/shell/ssh/default" target="_blank">
   Open login node shell
 </a>
-<% end %>
 <% end %>

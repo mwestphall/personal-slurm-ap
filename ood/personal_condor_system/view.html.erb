@@ -1,0 +1,37 @@
+<%
+  info = begin
+    JSON.parse(File.read(File.join(Dir.home, "personal-htcondor", "current-ap", "ood-view.json")))
+  rescue StandardError
+    nil
+  end
+%>
+<% if info.nil? %>
+<p>Waiting for the AP to report its status&hellip;</p>
+<% else %>
+<p><small>Last updated: <%= info["updated"] %></small></p>
+<p>Connected EPs: <strong><%= info["num_eps"] %></strong></p>
+<p>
+  Jobs in AP:
+  <strong><%= info["running"] %></strong> running,
+  <strong><%= info["held"] %></strong> held,
+  <strong><%= info["idle"] %></strong> idle,
+  <strong><%= info["completed"] %></strong> completed
+</p>
+
+<% if info["num_eps"].to_i.zero? %>
+<p>
+  No EPs are connected to this AP yet, so no jobs can run. If this problem persists,
+  contact an administrator.
+</p>
+<% else %>
+<p>To interact with this cluster, open a shell on the login node and run:</p>
+<pre>. ~/personal-htcondor/current-ap/condor.sh</pre>
+<p>
+  New to HTCondor? See the
+  <a href="https://htcondor.readthedocs.io/en/latest/users-manual/quick-start-guide.html" target="_blank">quick start guide</a>.
+</p>
+<a class="btn btn-primary" href="/pun/sys/shell/ssh/default" target="_blank">
+  Open login node shell
+</a>
+<% end %>
+<% end %>

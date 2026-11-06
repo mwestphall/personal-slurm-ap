@@ -70,7 +70,7 @@ AP_FULL_HOSTNAME="$(condor_config_val FULL_HOSTNAME)"
 echo "==> Pinning hostname to $AP_FULL_HOSTNAME via NETWORK_HOSTNAME"
 echo "NETWORK_HOSTNAME = $AP_FULL_HOSTNAME" > "$CONDOR_DIR/local/config.d/13-ap-hostname.conf"
 
-# Marker telling a multi-node launcher (see script.sh.erb) that the annex
+# Marker telling a multi-node launcher (see entrypoint.sh) that the annex
 # tarball is complete; cleared here so a resumed AP doesn't leave a stale one.
 ANNEX_READY="$CONDOR_DIR/annex-ready"
 rm -f "$ANNEX_READY"

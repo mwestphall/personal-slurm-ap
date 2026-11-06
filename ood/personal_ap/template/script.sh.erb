@@ -1,8 +1,9 @@
 #!/bin/bash
 #
 # Rendered by Open OnDemand from ood/personal_ap/template/script.sh.erb. Sets
-# shell variables from the form, then sources the plain-shell script.sh next to
-# it (staged alongside it at job runtime) which does the actual work.
+# shell variables from the form, then sources the plain-shell entrypoint.sh next
+# to it (copied from ood/personal_condor_system/template/ by ./install.sh) which
+# does the actual work.
 
 set -euo pipefail
 
@@ -12,9 +13,8 @@ BASE_DIR="<%= context.base_dir %>"
 # reuse_ap is only on the form (checked by default) when there is an existing AP.
 REUSE_AP="<%= context.respond_to?(:reuse_ap) ? context.reuse_ap : "0" %>"
 CREATE_SAMPLE="<%= context.create_sample %>"
-# The EP's share of the job; the job itself also has 1 CPU and 2 GB for the AP.
-EP_CPUS="<%= context.cpus.to_i %>"
-EP_MEM_GB="<%= context.memory.to_i %>"
+# AP only: don't launch an EP.
+LAUNCH_EP="0"
 
 # shellcheck disable=SC1091
 source "$AP_DIR/entrypoint.sh"
