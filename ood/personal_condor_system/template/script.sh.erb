@@ -12,7 +12,6 @@ BASE_DIR="<%= context.base_dir %>"
 # This app always picks up the existing job queue; entrypoint.sh installs a
 # fresh AP only if there isn't one yet. Creating a new queue is the AP-only app's job.
 REUSE_AP="1"
-CREATE_SAMPLE="<%= context.create_sample %>"
 LAUNCH_EP="1"
 # The EP's share of the job; the job itself also has 1 CPU and 2 GB for the AP.
 EP_CPUS="<%= context.cpus.to_i %>"

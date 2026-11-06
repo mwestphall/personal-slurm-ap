@@ -15,7 +15,7 @@ SRC="$REPO_DIR/ood/personal_condor_system/template"
 declare -A COPIES=(
     [ap]="11-ap-annex.conf install.sh start.sh"
     [ep]="annex-ep.sub update-annex-collector.sh"
-    [ood/personal_ap/template]="entrypoint.sh install.sh start.sh update-view.sh 11-ap-annex.conf sample-job/README.md sample-job/hello.sh sample-job/hello.sub"
+    [ood/personal_ap/template]="entrypoint.sh install.sh start.sh update-view.sh 11-ap-annex.conf"
 )
 
 for dest in "${!COPIES[@]}"; do

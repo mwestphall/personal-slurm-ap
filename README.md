@@ -30,10 +30,6 @@ To launch an instance of the **Create Personal HTCondor Cluster** interactive ap
 1. In the app's submission form, select a slurm partition and resource requests for your jobs.
     - All fields may be left as the default.
 
-1. Check the "Create Sample Submit File" checkbox. This creates a sample executable file, 
-   and a submit description file for running this executable as an HTCondor job, in
-   `~/personal-htcondor/sample-submit`.
-
 1. "Launch" the app.
 
 1. Watch the status of your AP interactive app. Wait for the AP app to reach the "Running" state. 
@@ -41,6 +37,10 @@ To launch an instance of the **Create Personal HTCondor Cluster** interactive ap
    ![AP Status](/docs/ap-status.png)
 
 # Submit your first HTCondor Job
+
+The sample job used below is created by the **Create Personal HTCondor Access Point** app, whose "Create Sample Submit File"
+checkbox (checked by default) copies a sample executable and submit file into `~/personal-htcondor/sample-submit`. Launch that
+app once first, then continue here.
 
 The AP and EP in your interactive app comprise a complete HTCondor cluster. HTCondor jobs submitted to your AP
 will run on your EPs. 

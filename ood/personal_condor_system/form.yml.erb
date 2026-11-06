@@ -5,7 +5,6 @@ form:
   - cpus
   - memory
   - time_limit
-  - create_sample
   - base_dir
 
 attributes:
@@ -32,15 +31,6 @@ attributes:
     label: "Time limit"
     value: "4:00:00"
     help: "Slurm time format, e.g. HH:MM:SS or D-HH:MM:SS. Your cluster runs only as long as this job does; jobs still in your queue when it ends are picked up the next time you launch a cluster."
-  create_sample:
-    widget: check_box
-    label: "Create Sample Submit File"
-    value: "1"
-    checked_value: "1"
-    unchecked_value: "0"
-    help: >-
-      Create an example HTCondor submit file and its executable in
-      `~/personal-htcondor/sample-submit/`
   base_dir:
     widget: text_field
     label: "Base install directory"

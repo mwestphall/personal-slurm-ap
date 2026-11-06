@@ -12,9 +12,13 @@ AP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="<%= context.base_dir %>"
 # reuse_ap is only on the form (checked by default) when there is an existing AP.
 REUSE_AP="<%= context.respond_to?(:reuse_ap) ? context.reuse_ap : "0" %>"
-CREATE_SAMPLE="<%= context.create_sample %>"
 # AP only: don't launch an EP.
 LAUNCH_EP="0"
+
+# Never fatal: a failure here only logs a warning.
+if [ "<%= context.create_sample %>" = "1" ]; then
+    "$AP_DIR/sample-job.sh" || echo "WARNING: could not create the sample submit file; continuing" >&2
+fi
 
 # shellcheck disable=SC1091
 source "$AP_DIR/entrypoint.sh"

@@ -2,7 +2,7 @@
 #
 # entrypoint.sh - Thin wrapper around install.sh and start.sh, sourced by each
 # OOD app's rendered script.sh.erb, which sets BASE_DIR, REUSE_AP,
-# CREATE_SAMPLE and LAUNCH_EP from the OOD form, plus EP_CPUS and EP_MEM_GB when
+# and LAUNCH_EP from the OOD form, plus EP_CPUS and EP_MEM_GB when
 # LAUNCH_EP is 1, and AP_DIR to this directory. The source of truth is
 # ood/personal_condor_system/template/; ./install.sh copies it (and the scripts
 # it calls) into ood/personal_ap/template/ so each app is self-contained.
@@ -23,24 +23,6 @@ else
 fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
-
-# Copy the sample job (template/sample-job) into ~/personal-htcondor/sample-submit,
-# leaving any files the user already has there alone. Never fatal: a failure
-# here only logs a warning.
-create_sample_submit() {
-    local dir="$HOME/personal-htcondor/sample-submit" file
-    mkdir -p "$dir" || return 1
-
-    for file in "$AP_DIR"/sample-job/*; do
-        [ -e "$dir/$(basename "$file")" ] || cp -p "$file" "$dir/" || return 1
-    done
-
-    echo "==> Sample job copied to $dir (see README.md there)"
-}
-
-if [ "$CREATE_SAMPLE" = "1" ]; then
-    create_sample_submit || echo "WARNING: could not create the sample submit file; continuing" >&2
-fi
 
 # The job runs on a single node. The AP runs as a job step on 1 CPU and 2 GB of
 # memory. With LAUNCH_EP=1, the job requested that on top of the user's request,
