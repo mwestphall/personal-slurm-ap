@@ -98,7 +98,7 @@ BASE_CGROUP =
 CGROUP_MEMORY_LIMIT_POLICY = none
 
 # Wrap every job in srun
-USER_JOB_WRAPPER = ${SCRIPT_DIR}/slurm_job_wrapper.sh
+USER_JOB_WRAPPER = ${SCRIPT_DIR}/srun_job_wrapper.sh
 
 # The scrubbed job environment would otherwise lose SLURM_JOB_ID, SLURM_* etc., which srun needs
 JOB_INHERITS_STARTER_ENVIRONMENT = true

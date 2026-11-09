@@ -12,4 +12,7 @@ args=(--ntasks=1 --nodes=1 --exact --export=ALL --unbuffered
     --cpus-per-task="${cpus:-1}" --mem="${mem:-1024}M")
 [ -n "$gpus" ] && [ "$gpus" -gt 0 ] && args+=(--gpus="$gpus")
 
-exec srun "${args[@]}" "$@"
+echo "slot ad: cpus=$cpus mem=$mem gpus=$gpus"
+printf '%q ' srun "${args[@]}" "$@"
+echo
+exec srun -vvv "${args[@]}" "$@"
