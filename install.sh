@@ -2,8 +2,8 @@
 #
 # install.sh - Copy the shared AP/EP files from their source of truth,
 # ood/personal_condor_system/template/, to every other place that needs a copy:
-# the AP-only OOD app, and the top-level ap/ and ep/ dirs. Slurm and OOD
-# don't follow symlinks into the shared filesystem, so these are real copies.
+# the AP-only OOD app. Slurm and OOD don't follow symlinks into the shared
+# filesystem, so this is a real copy.
 # Run this after editing any of the files below, and commit the result.
 
 set -euo pipefail
@@ -13,8 +13,6 @@ SRC="$REPO_DIR/ood/personal_condor_system/template"
 
 # <destination dir relative to the repo>: <files copied from $SRC>
 declare -A COPIES=(
-    [ap]="11-ap-annex.conf install.sh start.sh"
-    [ep]="annex-ep.sub update-annex-collector.sh"
     [ood/personal_ap/template]="entrypoint.sh parse_args.sh install.sh start.sh update-view.sh wait-for-lock.py 11-ap-annex.conf"
 )
 
