@@ -25,14 +25,6 @@ fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
 
-# True if another process holds the AP's InstanceLock (set via LOCK in
-# install.sh's 15-ap-lock.conf). Absent lock file means nobody holds it.
-ap_lock_held() {
-    local lock="$CONDOR_DIR/lock/InstanceLock"
-    [ -e "$lock" ] || return 1
-    ! flock --nonblock "$lock" true
-}
-
 # The job runs on a single node. The AP runs as a job step on 1 CPU and 2 GB of
 # memory. With LAUNCH_EP=1, the job requested that on top of the user's request,
 # and one EP runs as a second step on the rest of the job's resources.
@@ -71,16 +63,14 @@ if [ "${LAUNCH_EP:-0}" = "1" ]; then
     launch_ep &
 fi
 
-# When resuming, another AP may still be running on this install. Wait for it
-# to release its lock before touching any AP config. The EP launched above
-# is expected to pick up that AP's config in the meantime. If several jobs
-# wait at once, whichever polls first after the release wins; the rest keep
-# waiting once their AP start takes the lock.
+# When resuming, another AP may still be running on this install. Block until
+# it releases its InstanceLock (see install.sh's 15-ap-lock.conf) before
+# touching any AP config. The EP launched above is expected to pick up that
+# AP's config in the meantime. If several jobs wait at once, whichever the
+# kernel wakes first wins; we don't guard against the rest.
 if [ "${RESUMING:-0}" = "1" ]; then
-    while ap_lock_held; do
-        echo "==> AP lock at $CONDOR_DIR/lock/InstanceLock is held by another AP; waiting"
-        sleep 10
-    done
+    "$AP_DIR/wait-for-lock.py" "$CONDOR_DIR/lock/InstanceLock" || \
+        echo "warning: could not wait on the AP lock; starting anyway" >&2
 fi
 
 # Periodically write the file that view.html.erb reads, into the AP's shared
