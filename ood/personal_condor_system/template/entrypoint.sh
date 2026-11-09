@@ -79,7 +79,7 @@ launch_ep() {
 
     # annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR. A
     # preset EP_ID tells it it is running inside a job step.
-    SLURM_SUBMIT_DIR="$AP_DIR" "${SRUN[@]}" --cpus-per-task="$EP_CPUS" --mem="${EP_MEM_GB}G" \
+    SLURM_SUBMIT_DIR="$AP_DIR" "${SRUN[@]}" --cpus-per-task="$EP_CPUS" --mem="${EP_MEM_GB}G --overlap " \
         "$BASH" -c 'EP_ID="$SLURM_JOB_ID" exec bash "$0/annex-ep.sub" "$1"' \
         "$AP_DIR" "$BASE_DIR"
 }
