@@ -12,6 +12,7 @@ CURRENT_AP="$HOME/personal-htcondor/current-ap"
 
 if [ "$REUSE_AP" = "1" ] && [ -d "$CURRENT_AP" ]; then
     echo "==> Resuming existing AP at $CURRENT_AP"
+    RESUMING=1
 else
     echo "==> Installing a fresh AP"
     if ! INSTALL_OUTPUT="$("$AP_DIR/install.sh" --base-dir "$BASE_DIR")"; then
@@ -23,6 +24,14 @@ else
 fi
 
 CONDOR_DIR="$(readlink -f "$CURRENT_AP")"
+
+# True if another process holds the AP's InstanceLock (set via LOCK in
+# install.sh's 15-ap-lock.conf). Absent lock file means nobody holds it.
+ap_lock_held() {
+    local lock="$CONDOR_DIR/lock/InstanceLock"
+    [ -e "$lock" ] || return 1
+    ! flock --nonblock "$lock" true
+}
 
 # The job runs on a single node. The AP runs as a job step on 1 CPU and 2 GB of
 # memory. With LAUNCH_EP=1, the job requested that on top of the user's request,
@@ -60,6 +69,18 @@ launch_ep() {
 
 if [ "${LAUNCH_EP:-0}" = "1" ]; then
     launch_ep &
+fi
+
+# When resuming, another AP may still be running on this install. Wait for it
+# to release its lock before touching any AP config. The EP launched above
+# is expected to pick up that AP's config in the meantime. If several jobs
+# wait at once, whichever polls first after the release wins; the rest keep
+# waiting once their AP start takes the lock.
+if [ "${RESUMING:-0}" = "1" ]; then
+    while ap_lock_held; do
+        echo "==> AP lock at $CONDOR_DIR/lock/InstanceLock is held by another AP; waiting"
+        sleep 10
+    done
 fi
 
 # Periodically write the file that view.html.erb reads, into the AP's shared

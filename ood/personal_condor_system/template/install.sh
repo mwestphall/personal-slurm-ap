@@ -140,6 +140,12 @@ AP_COLLECTOR.ALLOW_DAEMON = \$(ALLOW_DAEMON), $(whoami)@condor-$SUFFIX
 SCHEDD.ALLOW_DAEMON = \$(ALLOW_DAEMON), $(whoami)@condor-$SUFFIX
 EOF
 
+# Put the AP's lock dir at a fixed path within the install dir. The master holds
+# $LOCK/InstanceLock for as long as it runs, which entrypoint.sh polls to avoid
+# starting a second AP on the same install.
+mkdir -p "$CONDOR_DIR/lock"
+echo "LOCK = $CONDOR_DIR/lock" > "$CONDOR_DIR/local/config.d/15-ap-lock.conf"
+
 # Leave a well-known symlink so later jobs can find and resume this AP.
 mkdir -p "$HOME/personal-htcondor"
 ln -sfn "$CONDOR_DIR" "$HOME/personal-htcondor/current-ap"
