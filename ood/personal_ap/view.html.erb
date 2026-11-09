@@ -17,8 +17,10 @@
   <strong><%= info["completed"] %></strong> completed
 </p>
 
-<p>To submit jobs to your queue, open a shell on the login node and run:</p>
+<p>To start using your AP, open a shell on the login node and run the following to set your condor environment:</p>
 <pre>. ~/personal-htcondor/current-ap/condor.sh</pre>
+<p>Then, submit your jobs to your AP's job queue:</p>
+<pre>condor_submit &lt;path/to/job.sub&gt;</pre>
 <p>
   New to HTCondor? See the
   <a href="https://htcondor.readthedocs.io/en/latest/users-manual/quick-start-guide.html" target="_blank">quick start guide</a>.
