@@ -6,6 +6,7 @@
 /ep/update-annex-collector.sh
 /ood/personal_ap/template/entrypoint.sh
 /ood/personal_ap/template/install.sh
+/ood/personal_ap/template/parse_args.sh
 /ood/personal_ap/template/start.sh
 /ood/personal_ap/template/update-view.sh
 /ood/personal_ap/template/11-ap-annex.conf

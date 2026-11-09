@@ -1,13 +1,38 @@
 #!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4G
 #
-# entrypoint.sh - Thin wrapper around install.sh and start.sh, sourced by each
-# OOD app's rendered script.sh.erb, which sets BASE_DIR, REUSE_AP,
-# and LAUNCH_EP from the OOD form, plus EP_CPUS and EP_MEM_GB when
-# LAUNCH_EP is 1, and AP_DIR to this directory. The source of truth is
+# The #SBATCH defaults above (override them on the sbatch command line) are the
+# AP's 1 CPU and 2 GB plus an EP's 1 CPU and 2 GB with --system.
+#
+# entrypoint.sh - Thin wrapper around install.sh and start.sh that runs a
+# personal HTCondor AP (and optionally one EP) inside a Slurm job. It can be
+# submitted directly:
+#
+#   cd <dir containing entrypoint.sh> && sbatch [sbatch options] entrypoint.sh [--base-dir <path>] [--discard-queue] [--system]
+#
+# (see parse_args.sh, or --help, for the options) or sourced by an Open OnDemand
+# app's rendered script.sh.erb, which presets BASE_DIR, REUSE_AP, LAUNCH_EP,
+# EP_CPUS, EP_MEM_GB and AP_DIR from the OOD form. The source of truth is
 # ood/personal_condor_system/template/; ./install.sh copies it (and the scripts
 # it calls) into ood/personal_ap/template/ so each app is self-contained.
 
-BASE_DIR="${BASE_DIR:-/scratch/$USER}" # only used for a fresh install
+# The directory holding this script and the scripts it calls. Under sbatch,
+# Slurm runs a spooled copy of the script, so BASH_SOURCE is no use there;
+# sbatch must instead be run from this directory, which Slurm records as
+# SLURM_SUBMIT_DIR. Outside Slurm, use the script's own directory.
+if [ -z "${AP_DIR:-}" ]; then
+    AP_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+fi
+if [ ! -f "$AP_DIR/parse_args.sh" ]; then
+    echo "error: parse_args.sh not found in $AP_DIR; run sbatch from the directory containing entrypoint.sh" >&2
+    exit 1
+fi
+
+# shellcheck disable=SC1091
+source "$AP_DIR/parse_args.sh" "$@"
+
 CURRENT_AP="$HOME/personal-htcondor/current-ap"
 
 if [ "$REUSE_AP" = "1" ] && [ -d "$CURRENT_AP" ]; then
