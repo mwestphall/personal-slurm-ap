@@ -88,6 +88,21 @@ STARTD_CRON_UPDATE_ANNEX_COLLECTOR_ARGS = \$(AP_SCHEDD_ADDRESS_FILE)
 STARTD_CRON_UPDATE_ANNEX_COLLECTOR_MODE = Periodic
 STARTD_CRON_UPDATE_ANNEX_COLLECTOR_PERIOD = 60
 STARTD_CRON_LOG_NON_ZERO_EXIT = True
+
+
+# The EP doesn't have direct access to CGroups, wrap all slot entrypoints in srun
+# to approximate condor's cgroup management
+
+# Slurm owns the cgroups, so turn off HTCondor's
+BASE_CGROUP =
+CGROUP_MEMORY_LIMIT_POLICY = none
+
+# Wrap every job in srun
+USER_JOB_WRAPPER = ${SCRIPT_DIR}/slurm_job_wrapper.sh
+
+# The scrubbed job environment would otherwise lose SLURM_JOB_ID, SLURM_* etc., which srun needs
+JOB_INHERITS_STARTER_ENVIRONMENT = true
+
 EOF
 
 echo ""
