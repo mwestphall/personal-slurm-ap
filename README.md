@@ -139,20 +139,21 @@ To launch an HTCondor Access Point via `sbatch`:
    ```
 
 1. Submit `entrypoint.sh` via `sbatch`. The Access Point requests 1 CPU and 2 GB RAM by default, which should be sufficient
-   for most single-user job queues.
+   for most single-user job queues. Set your `sbatch` options, such as slurm partition and job duration, as desired.
 
    ```
-   sbatch entrypoint.sh --base-dir <shared-fs-dir>
+   sbatch --part <part> --time 1:00:00 \
+          entrypoint.sh --base-dir <shared-fs-dir>
    ```
 
 1. Tail the created job's logs to confirm that the Access Point starts successfully.
 
-  ```
-  $ tail -f slurm-<jobid>.out
-  ...
-  0: ==> To interact with this AP from the login node, source the condor env file at <shared-fs-dir>/condor-<jobid>/condor.sh:
-  0:     '. <shared-fs-dir>/condor-<jobid>/condor.sh'
-  ```
+   ```
+   $ tail -f slurm-<jobid>.out
+   ...
+   0: ==> To interact with this AP from the login node, source the condor env file at <shared-fs-dir>/condor-<jobid>/condor.sh:
+   0:     '. <shared-fs-dir>/condor-<jobid>/condor.sh'
+   ```
 
 1. Source the environment file indicated in the job logs, then confirm that you can contact both running daemons on the Access Point.
    `condor_q` lists the jobs in the Access Point's job queue, while `condor_status` lists all running HTCondor daemons connected to
@@ -247,8 +248,12 @@ Once you've prepared your HTCondor job queue, launch a full HTCondor system to r
    Set the resource requirements for this Execution Point as desired via sbatch args:
 
    ```
-   sbatch --cpus-per-task=4 --mem=8G entrypoint.sh --base-dir <shared-fs-dir> --system
+   sbatch --part <part> --time 4:00:00 --cpus-per-task=4 --mem=8G \
+          entrypoint.sh --base-dir <shared-fs-dir> --system
    ```
+
+   **Note**: You must set `--cpus-per-task` > 1 and `--mem` > 2GB when launching a full HTCondor system with `--system`. 
+   1 CPU and 2 GB RAM from the job are always reserved for an Access Point, with the remainder of the allocation going to an Execution Point.
 
 1. Confirm that the Execution Point successfully registers with the Access Point:
 

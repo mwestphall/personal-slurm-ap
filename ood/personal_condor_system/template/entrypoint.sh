@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=2
-#SBATCH --mem=4G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=2G
 #
 # The #SBATCH defaults above (override them on the sbatch command line) are the
-# AP's 1 CPU and 2 GB plus an EP's 1 CPU and 2 GB with --system.
+# AP's 1 CPU and 2 GB. To additionally allocate an EP with --system, you must
+# request resources above the defaults
 #
 # entrypoint.sh - Thin wrapper around install.sh and start.sh that runs a
 # personal HTCondor AP (and optionally one EP) inside a Slurm job. It can be
