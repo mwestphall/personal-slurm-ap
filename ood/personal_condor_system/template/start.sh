@@ -129,13 +129,13 @@ ANNEX_TARBALL="$CONDOR_DIR/annex-$ANNEX_NAME.tar"
 
 export _condor_SEC_CLIENT_AUTHENTICATION_METHODS=IDTOKENS
 
-# ASSUMPTION: an annex "exists in the schedd" if `htcondor annex status`
-# reports it (vs. "Found no ... annexes named"). Adjust here if the
-# htcondor CLI's behavior differs.
+# An annex "exists in the schedd" if any job in the queue has the
+# hpc_annex_name attribute set to $ANNEX_NAME. This is a raw queue check; `htcondor annex
+# status` proved unreliable (annex create then failed with "already created").
 annex_exists_in_schedd() {
     local out
-    out="$(htcondor annex status "$ANNEX_NAME" 2>&1)" || return 1
-    [[ "$out" != *"Found no"* ]]
+    out="$(condor_q -constraint "hpc_annex_name == \"$ANNEX_NAME\"" -af hpc_annex_name 2>/dev/null)" || return 1
+    [ -n "$out" ]
 }
 
 prepare_annex() {

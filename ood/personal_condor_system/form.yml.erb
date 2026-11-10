@@ -24,17 +24,17 @@ attributes:
     value: 2
     min: 1
     help: >-
-      Resources for the Execution Point that runs your HTCondor jobs. The cluster runs on a single node;
+      Resources for the Execution Point that runs your HTCondor jobs. The system runs on a single node;
       the Access Point's own 1 CPU and 2 GB of memory are added on top of this request.
   time_limit:
     widget: text_field
     label: "Time limit"
     value: "4:00:00"
-    help: "Slurm time format, e.g. HH:MM:SS or D-HH:MM:SS. Your cluster runs only as long as this job does; jobs still in your queue when it ends are picked up the next time you launch a cluster."
+    help: "Slurm time format, e.g. HH:MM:SS or D-HH:MM:SS. Your system runs only as long as this job does; jobs still in your queue when it ends are picked up the next time you launch a system."
   base_dir:
     widget: text_field
     label: "Base install directory"
     value: ""
     help: >-
-      Working directory for your HTCondor cluster. Must be on shared storage, 
+      Working directory for your HTCondor system. Must be on shared storage, 
       accessible from both the login node and all worker nodes. Defaults to /scratch/$USER.

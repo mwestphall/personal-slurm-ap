@@ -30,7 +30,7 @@ Run all installation steps on the OOD host.
 
 ## Prepare the Repository
 
-The "Create" and "Extend" Cluster apps share source files. Stage the apps' source in your home directory
+The "AP" and "System" apps share source files. Stage the apps' source in your home directory
 prior to installing into the OOD system-level directories. The root `install.sh` copies the shared files 
 into both apps' template directories, and must be run before installing into the system-level Open OnDemand
 directories. Ensure that `install.sh` is run after each `git clone` or `pull`.
@@ -109,7 +109,7 @@ to set the default to a different location. Users may also override the default 
 
 ## Verifying the Installation
 
-1. As a test user, open **Interactive Apps > Create Personal HTCondor Cluster**, keep the defaults, and launch it.
+1. As a test user, open **Interactive Apps > Create Personal HTCondor AP**, keep the defaults, and launch it.
 1. Wait for the session to reach **Running**. The session card should report connected EPs after a short time.
 1. Follow "Submit your first HTCondor Job" in [README.md](README.md) to confirm that the sample job runs on an EP.
 
