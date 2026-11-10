@@ -6,6 +6,4 @@ role: batch_connect
 description: |
   Launch a personal HTCondor Access Point (Submit Node) as a single-node Slurm job, with no
   Execution Points. Use it to create a job queue and submit jobs; they will run once you
-  launch **Create Personal HTCondor Cluster**.
-
-  **Note** For best results, do not run multiple simultaneous personal HTCondor Access Points.
+  launch **Create Personal HTCondor System**.
