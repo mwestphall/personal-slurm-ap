@@ -1,0 +1,4 @@
+JOB square square.sub
+JOB plot plot.sub
+
+PARENT square CHILD plot

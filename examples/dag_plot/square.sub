@@ -1,0 +1,20 @@
+# Executable file to run in this HTCondor job
+executable              = square.sh 
+arguments               = $(number)
+
+# Output files for this HTCondor job
+log                     = square.$(number).log
+output                  = square.$(number).out
+error                   = square.$(number).err
+
+# Instruct HTCondor to transfer the executable and other input files to worker nodes
+should_transfer_files   = Yes 
+when_to_transfer_output = ON_EXIT
+transfer_output_files   = *_squared.txt
+
+# Resource requests for the job. The job will only run on worker nodes with sufficient resources.
+request_cpus            = 1
+request_memory          = 256M 
+request_disk            = 1G
+
+queue number from numbers.txt
