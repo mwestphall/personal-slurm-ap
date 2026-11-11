@@ -3,9 +3,9 @@ executable              = square.sh
 arguments               = $(number)
 
 # Output files for this HTCondor job
-log                     = logs/square.$(number).log
-output                  = logs/square.$(number).out
-error                   = logs/square.$(number).err
+log                     = log/square.$(number).log
+output                  = log/square.$(number).out
+error                   = log/square.$(number).err
 
 # Instruct HTCondor to transfer the executable and other input files to worker nodes
 should_transfer_files   = Yes 

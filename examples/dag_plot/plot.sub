@@ -3,9 +3,9 @@ executable              = plot.R
 container_image         = docker://r-base
 
 # Output files for this HTCondor job
-log                     = plot.log
-output                  = plot.out
-error                   = plot.err
+log                     = log/plot.log
+output                  = log/plot.out
+error                   = log/plot.err
 
 # Instruct HTCondor to transfer the executable and other input files to worker nodes
 should_transfer_files   = Yes 
@@ -18,4 +18,4 @@ request_cpus            = 1
 request_memory          = 1G
 request_disk            = 1G
 
-queue 
+queue
