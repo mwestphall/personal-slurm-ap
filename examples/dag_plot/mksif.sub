@@ -1,0 +1,7 @@
+# Helper job that creates a container image containing R dependencies for the plot job
+shell = apptainer build r.sif docker://r-base || true
+universe = local
+
+output   = log/mksif.out
+error    = log/mksif.err
+log      = log/mksif.log

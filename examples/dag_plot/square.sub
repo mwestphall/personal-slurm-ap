@@ -3,18 +3,21 @@ executable              = square.sh
 arguments               = $(number)
 
 # Output files for this HTCondor job
-log                     = square.$(number).log
-output                  = square.$(number).out
-error                   = square.$(number).err
+log                     = log/square.$(number).log
+output                  = log/square.$(number).out
+error                   = log/square.$(number).err
 
-# Instruct HTCondor to transfer the executable and other input files to worker nodes
 should_transfer_files   = Yes 
 when_to_transfer_output = ON_EXIT
-transfer_output_files   = *_squared.txt
+# Transfer the calculation output back to the current working directory
+transfer_output_files   = $(number)_squared.txt
+# Move the output to a subdirectory to prevent cluttering the main input dir
+transfer_output_remaps  = "$(number)_squared.txt = squared/$(number)_squared.txt"
 
 # Resource requests for the job. The job will only run on worker nodes with sufficient resources.
 request_cpus            = 1
-request_memory          = 256M 
+request_memory          = 1G
 request_disk            = 1G
 
+# Queue a list of jobs with different inputs, one input per line in numbers.txt
 queue number from numbers.txt

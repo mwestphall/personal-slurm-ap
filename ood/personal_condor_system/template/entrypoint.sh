@@ -1,7 +1,12 @@
 #!/bin/bash
 #SBATCH --nodes=1
+<<<<<<< HEAD
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
+=======
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4G
+>>>>>>> main
 #SBATCH --time=1:00:00
 #
 # The #SBATCH defaults above (override them on the sbatch command line) are the

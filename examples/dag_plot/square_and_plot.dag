@@ -1,4 +1,14 @@
+# HTCondor DAG (Directed Acylic Graph). Defines an ordering of 
+# job lists in a multi-stage workflow
+
+# First job list: Run calculations on a list of numbers (square them)
 JOB square square.sub
+
+# Second job list: Build a container with the `R` runtime requirements for the third job
+JOB mksif mksif.sub
+
+# Third job list: Plot the results of every calculation in the previous stage
 JOB plot plot.sub
 
-PARENT square CHILD plot
+# Run the plotting job only after all calculation jobs have completed
+PARENT square mksif CHILD plot

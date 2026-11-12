@@ -1,21 +1,26 @@
-# Executable file to run in this HTCondor job
+# Executable file to run in the plotting HTCondor Job (a short, custom R script)
 executable              = plot.R
-container               = docker://r-base
+
+# Define a container for this job: Create a fixed environment with dependencies pre-installed,
+# Regardless of what's installed directly on the Execution Point
+container_image         = r.sif
 
 # Output files for this HTCondor job
-log                     = plot.log
-output                  = plot.out
-error                   = plot.err
+log                     = log/plot.log
+output                  = log/plot.out
+error                   = log/plot.err
 
-# Instruct HTCondor to transfer the executable and other input files to worker nodes
 should_transfer_files   = Yes 
 when_to_transfer_output = ON_EXIT
-transfer_input_files    = *_squared.txt
-transfer_output_files   = *.png
+
+# Transfer the outputs of the previous stage into the input of this job
+transfer_input_files    = squared/
+# Transfer the plot produced by this job back to the working directory
+transfer_output_files   = plot.png
 
 # Resource requests for the job. The job will only run on worker nodes with sufficient resources.
 request_cpus            = 1
 request_memory          = 1G
 request_disk            = 1G
 
-queue number from numbers.txt
+queue

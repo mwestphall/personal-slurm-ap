@@ -180,39 +180,16 @@ To launch an HTCondor Access Point via `sbatch`:
 
 ### Submit your first HTCondor Job
 
-Place a "Hello World" HTCondor job into your Access Point's job queue. 
+Submit a "Hello World" HTCondor job to your Access Point's job queue. 
 
-1. Create a sample job on your login node, consisting of a submit description file (`hello.sub`) and an
-   executable bash script (`hello.sh`):
+1. Change directories to `examples/hello_world` and examine its contents. It contains a 
+   submit description file (`hello.sub`) and an executable bash script (`hello.sh`).
 
 
    ```
-   $ cat << EOF >> hello.sub
-   executable              = hello.sh
-    
-   log                     = hello.log
-   output                  = hello.out
-   error                   = hello.err
-    
-   should_transfer_files   = Yes
-   when_to_transfer_output = ON_EXIT
-   
-   request_cpus            = 1
-   request_memory          = 512M
-   request_disk           = 1G
-    
-   queue
-    
-   EOF
-    
-   $ cat << EOF >> hello.sh
-   #!/bin/bash
-   echo "Hello, World!"
-   echo "I am running on \$(hostname)"
-   sleep 30
-   EOF
-    
-   $ chmod +x hello.sh
+   $ cd examples/hello_world
+   $ less hello.sub
+   $ less hello.sh
    ```
 
 1. Submit your HTCondor job to your AP
@@ -233,6 +210,35 @@ Place a "Hello World" HTCondor job into your Access Point's job queue.
    Total for query: 1 jobs; 0 completed, 0 removed, 1 idle, 0 running, 0 held, 0 suspended 
    Total for all users: 1 jobs; 0 completed, 0 removed, 1 idle, 0 running, 0 held, 0 suspended
    ```
+
+### (Optional) Submit a multi-stage HTCondor DAG
+
+For an example of HTCondor workflow management, submit a multi-stage DAG (Directed Acyclic Graph) to 
+your Access Point's job queue.
+
+1. Change directories to `examples/dag_plot` and examine its contents. It contains:
+   - A DAG description file describing a three-stage workflow (`square_and_plot.dag`)
+   - Submit description files for each stage of the workflow (`square.sub`, `mksif.sub`, and `plot.sub`)
+   - An executable script for each stage of the workflow (`square.sh` and `plot.R`)
+   - A list of inputs for the first stage of the workflow (`numbers.txt`)
+
+1. Note the features of the submit description files:
+   - `square.sub` contains the queue statement `queue number from numbers.txt`. This instructs
+     your AP to queue a list of jobs, with one instance per line in the input file.
+   - `mksif.sub` contains a `shell = apptainer build` statement that pre-builds an `R` container
+     environment for `plot.sub`. This translates the default Docker `R` container into an Apptainer SIF
+     file.
+   - `plot.sub` contains a container environment description `container_image = r.sif`.
+     This instructs an EP running your job to run it inside of the `R` container environment from
+     `mksif.sub`.
+
+1. Submit your HTCondor DAG to your AP
+
+   ```
+   condor_submit_dag square_and_plot.dag
+   ```
+
+1. Confirm that your DAG jobs have been enqueued successfully
 
 ### Schedule an HTCondor System to run your jobs
 
