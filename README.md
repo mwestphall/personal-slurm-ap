@@ -216,17 +216,20 @@ For an example of HTCondor workflow management, submit a multi-stage DAG (Direct
 your Access Point's job queue.
 
 1. Change directories to `examples/dag_plot` and examine its contents. It contains:
-   - A DAG description file describing a two-stage workflow (`square_and_plot.dag`)
-   - A submit description file for each stage of the workflow (`square.sub` and `plot.sub`)
+   - A DAG description file describing a three-stage workflow (`square_and_plot.dag`)
+   - Submit description files for each stage of the workflow (`square.sub`, `mksif.sub`, and `plot.sub`)
    - An executable script for each stage of the workflow (`square.sh` and `plot.R`)
-   - A list of inputs for the first stage of the workflow `numbers.txt`
+   - A list of inputs for the first stage of the workflow (`numbers.txt`)
 
 1. Note the features of the submit description files:
    - `square.sub` contains the queue statement `queue number from numbers.txt`. This instructs
      your AP to queue a list of jobs, with one instance per line in the input file.
-   - `plot.sub` contains a container environment description `container_image = docker://r-base`.
-     This instructs an EP running your job to run it inside of the default `R` programming language
-     continer, so that you don't need to manually manage R's dependencies.
+   - `mksif.sub` contains a `shell = apptainer build` statement that pre-builds an `R` container
+     environment for `plot.sub`. This translates the default Docker `R` container into an Apptainer SIF
+     file.
+   - `plot.sub` contains a container environment description `container_image = r.sif`.
+     This instructs an EP running your job to run it inside of the `R` container environment from
+     `mksif.sub`.
 
 1. Submit your HTCondor DAG to your AP
 
