@@ -3,7 +3,7 @@ executable              = plot.R
 
 # Define a container for this job: Create a fixed environment with dependencies pre-installed,
 # Regardless of what's installed directly on the Execution Point
-container_image         = docker://r-base
+container_image         = r.sif
 
 # Output files for this HTCondor job
 log                     = log/plot.log
