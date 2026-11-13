@@ -81,6 +81,9 @@ launch_ep() {
 
     # annex-ep.sub locates update-annex-collector.sh via SLURM_SUBMIT_DIR. A
     # preset EP_ID tells it it is running inside a job step.
+    # Steps inherit the job's GRES (e.g. a GPU from sbatch --gres), and a step
+    # holds it exclusively. The AP step opts out with --gres=none (below) so the
+    # EP step, which runs the jobs, gets the GPU. (Job's GRES is inherited here.)
     SLURM_SUBMIT_DIR="$AP_DIR" "${SRUN[@]}" --cpus-per-task="$EP_CPUS" --mem="${EP_MEM_GB}G"  --overlap \
         "$BASH" -c 'EP_ID="$SLURM_JOB_ID" exec bash "$0/annex-ep.sub" "$1"' \
         "$AP_DIR" "$BASE_DIR"
@@ -104,4 +107,4 @@ fi
 # dir. Runs in the background alongside the AP, and is cleaned up with the job.
 "$AP_DIR/update-view.sh" --condor-dir "$CONDOR_DIR" &
 
-exec "${SRUN[@]}" --cpus-per-task=1 --mem=2G "$BASH" "$AP_DIR/start.sh" --condor-dir "$CONDOR_DIR"
+exec "${SRUN[@]}" --cpus-per-task=1 --mem=2G --gres=none "$BASH" "$AP_DIR/start.sh" --condor-dir "$CONDOR_DIR"
