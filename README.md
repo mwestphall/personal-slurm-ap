@@ -292,3 +292,15 @@ Once you've prepared your HTCondor job queue, launch a full HTCondor system to r
    Hello, World!
    I am running on hpc-worker123
    ```
+
+### (Optional) Schedule an HTCondor System with GPUs to run your jobs
+
+HTCondor will automatically detect and use any GPUs allocated to its Slurm job. To schedule
+an HTCondor system with GPUs:
+
+1. Ensure that you are submitting to a partition that contains GPUs.
+1. Add a GPU request to your `sbatch` command.
+
+```
+sbatch --cpus-per-task=4 --mem=8G --part gpu --gres gpu:1 entrypoint.sh --base-dir <shared-fs-dir> --system
+```
