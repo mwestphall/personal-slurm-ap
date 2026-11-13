@@ -103,4 +103,4 @@ fi
 # dir. Runs in the background alongside the AP, and is cleaned up with the job.
 "$AP_DIR/update-view.sh" --condor-dir "$CONDOR_DIR" &
 
-exec "${SRUN[@]}" --cpus-per-task=1 --mem=2G "$BASH" "$AP_DIR/start.sh" --condor-dir "$CONDOR_DIR"
+exec "${SRUN[@]}" --cpus-per-task=1 --mem=2G --gres=none "$BASH" "$AP_DIR/start.sh" --condor-dir "$CONDOR_DIR"
